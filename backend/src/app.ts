@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import { errorHandler } from './middleware/error';
+
 
 const app = express();
 
@@ -52,5 +54,7 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-export default app;
+// Global Error Handler Middleware
+app.use(errorHandler);
 
+export default app;
