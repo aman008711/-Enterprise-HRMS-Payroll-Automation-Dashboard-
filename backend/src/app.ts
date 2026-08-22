@@ -2,8 +2,13 @@ import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import { errorHandler } from './middleware/error';
-
+import authRoutes from './routes/auth';
+import employeeRoutes from './routes/employee';
+import departmentRoutes from './routes/department';
+import leaveRoutes from './routes/leave';
+import payrollRoutes from './routes/payroll';
 
 const app = express();
 
@@ -44,6 +49,14 @@ app.use(limiter);
 // Standard Parser Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Mounting routes
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/leaves', leaveRoutes);
+app.use('/api/payroll', payrollRoutes);
 
 // Basic health check route
 app.get('/health', (req: Request, res: Response) => {
@@ -58,3 +71,5 @@ app.get('/health', (req: Request, res: Response) => {
 app.use(errorHandler);
 
 export default app;
+
+
