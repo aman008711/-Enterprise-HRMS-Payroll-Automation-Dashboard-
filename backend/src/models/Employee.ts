@@ -77,7 +77,6 @@ const EmployeeSchema: Schema<IEmployee> = new Schema(
 );
 
 // Optimize indexes for relational joins and aggregate lookups
-EmployeeSchema.index({ employeeId: 1 });
 EmployeeSchema.index({ department: 1 });
 EmployeeSchema.index({ manager: 1 });
 
