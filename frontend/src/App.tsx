@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
+import Employees from './pages/Employees';
 import DashboardLayout from './components/DashboardLayout';
 import { Users, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
 
@@ -94,16 +95,6 @@ const OverviewPage: React.FC = () => {
   );
 };
 
-// 2. Employees Page Placeholder
-const EmployeesPage: React.FC = () => (
-  <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-xl">
-    <h3 className="text-lg font-bold text-white mb-2">Employee Directory</h3>
-    <p className="text-gray-400 text-sm">Managing onboarding pipelines, manager associations, and departmental assignments.</p>
-    <div className="mt-8 border border-dashed border-white/10 rounded-2xl h-48 flex items-center justify-center text-gray-500 text-sm">
-      Roster Table Loader Placeholder
-    </div>
-  </div>
-);
 
 // 3. Leaves Page Placeholder
 const LeavesPage: React.FC = () => (
@@ -143,7 +134,7 @@ const AppRoutes: React.FC = () => {
           }
         >
           <Route index element={<OverviewPage />} />
-          <Route path="employees" element={<EmployeesPage />} />
+          <Route path="employees" element={<Employees />} />
           <Route path="leaves" element={<LeavesPage />} />
           <Route path="payroll" element={<PayrollPage />} />
         </Route>
