@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { 
-  Users, 
-  Calendar, 
-  CreditCard, 
-  LayoutDashboard, 
-  LogOut, 
-  Menu, 
-  X, 
+import {
+  Users,
+  Calendar,
+  CreditCard,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  X,
   User as UserIcon,
   ShieldAlert
 } from 'lucide-react';
@@ -86,11 +86,10 @@ const DashboardLayout: React.FC = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 ${
-                  active 
-                    ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20 border border-brand-500/40' 
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 ${active
+                    ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20 border border-brand-500/40'
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 {link.name}
@@ -126,9 +125,9 @@ const DashboardLayout: React.FC = () => {
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40 flex">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setMobileOpen(false)} />
-          
+
           <aside className="relative flex w-64 max-w-xs flex-col bg-slate-950 border-r border-white/10 p-5 z-50">
-            <button 
+            <button
               onClick={() => setMobileOpen(false)}
               className="absolute right-4 top-4 p-2 rounded-lg bg-white/5 border border-white/10 text-white cursor-pointer"
             >
@@ -151,11 +150,10 @@ const DashboardLayout: React.FC = () => {
                     key={link.path}
                     to={link.path}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                      active 
-                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' 
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${active
+                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20'
                         : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     {link.name}
@@ -191,13 +189,13 @@ const DashboardLayout: React.FC = () => {
         {/* Header Navigation */}
         <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 glass-panel md:bg-transparent md:border-b-0 backdrop-blur-md md:backdrop-blur-none">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setMobileOpen(true)}
               className="md:hidden p-2 rounded-lg bg-white/5 border border-white/10 text-white cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>
-            
+
             <h2 className="text-xl font-extrabold text-white leading-none">
               {filteredLinks.find(link => isActive(link.path))?.name || 'Overview'}
             </h2>
