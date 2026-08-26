@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Employees from './pages/Employees';
+import Onboard from './pages/Onboard';
 import DashboardLayout from './components/DashboardLayout';
 import { Users, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
 
@@ -135,6 +136,7 @@ const AppRoutes: React.FC = () => {
         >
           <Route index element={<OverviewPage />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="onboard" element={<Onboard />} />
           <Route path="leaves" element={<LeavesPage />} />
           <Route path="payroll" element={<PayrollPage />} />
         </Route>
