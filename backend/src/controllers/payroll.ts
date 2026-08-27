@@ -4,6 +4,7 @@ import Employee from '../models/Employee';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
+import { generatePayslipPDF } from '../utils/pdf';
 
 // @desc    Get payroll history lists with nested employee and department details via aggregation
 // @route   GET /api/payroll
@@ -191,3 +192,54 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
     next(err);
   }
 };
+
+// @desc    Download PDF payslip for a specific payroll record
+// @route   GET /api/payroll/:id/download
+// @access  Private (Admin / HR Manager / Employee owning the record)
+export const downloadPayslip = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const payroll = await Payroll.findById(req.params.id)
+      .populate('employee', 'firstName lastName employeeId jobTitle department')
+      .populate({
+        path: 'employee',
+        populate: { path: 'department', select: 'name code' }
+      });
+
+    if (!payroll) {
+      return next(new ErrorResponse('Payroll record not found', 404));
+    }
+
+    const employee = payroll.employee as any;
+
+    // Access control: Employees can only view/download their own payroll records
+    if (req.user?.role === 'Employee') {
+      const currentEmp = await Employee.findOne({ user: req.user._id });
+      if (!currentEmp || currentEmp._id.toString() !== employee?._id?.toString()) {
+        return next(new ErrorResponse('Not authorized to access this payslip', 403));
+      }
+    }
+
+    // Set Response Headers for PDF downloading/attachment streaming
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=payslip-${employee?.employeeId || 'record'}-${payroll._id}.pdf`
+    );
+
+    // Call PDF generation helper (pipes directly to res stream)
+    await generatePayslipPDF(payroll, res);
+
+    // Log download action in the security audit trails
+    createAuditLog({
+      action: 'PAYSLIP_DOWNLOADED',
+      targetModel: 'Payroll',
+      targetId: payroll._id.toString(),
+      details: `Payslip downloaded for Employee ${employee?.employeeId}`,
+      req
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
+

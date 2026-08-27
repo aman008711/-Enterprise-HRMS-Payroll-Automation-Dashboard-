@@ -48,7 +48,7 @@ export const generatePayslipPDF = (payroll: any, res: Response): Promise<void> =
     doc.text(payroll.employee?.employeeId || '-', 135, 132);
     doc.text(`${payroll.employee?.firstName} ${payroll.employee?.lastName}`, 135, 147);
     doc.text(payroll.employee?.jobTitle || '-', 135, 162);
-    doc.text(payroll.department?.name || '-', 135, 177);
+    doc.text(payroll.department?.name || payroll.employee?.department?.name || '-', 135, 177);
 
     // Right Grid Columns
     doc.font('Helvetica').fillColor('#374151');
