@@ -98,7 +98,7 @@ const DashboardLayout: React.FC = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+        <div className="p-4 border-t border-white/5 bg-white/1">
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl mb-4">
             <div className="w-9 h-9 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400 font-bold text-sm shrink-0">
               {user?.email[0]?.toUpperCase()}

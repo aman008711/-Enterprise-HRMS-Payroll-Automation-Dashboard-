@@ -91,7 +91,7 @@ export function Table<T>({
       <div className="relative w-full overflow-x-auto rounded-2xl glass-card border border-white/5 custom-scrollbar">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/10 bg-white/[0.02]">
+            <tr className="border-b border-white/10 bg-white/2">
               {columns.map((col, index) => {
                 const isSortedCol = sortField === (col.sortKey || col.accessor);
                 return (
@@ -148,7 +148,7 @@ export function Table<T>({
               data.map((row, rIndex) => (
                 <tr
                   key={rIndex}
-                  className="bg-white/0 hover:bg-white/[0.02] transition duration-150"
+                  className="bg-white/0 hover:bg-white/2 transition duration-150"
                 >
                   {columns.map((col, cIndex) => {
                     const cellContent = col.render
@@ -186,7 +186,7 @@ export function Table<T>({
                 <select
                   value={limit}
                   onChange={(e) => onLimitChange(Number(e.target.value))}
-                  className="bg-[#030014] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500 cursor-pointer"
+                  className="glass-input px-2.5 py-1.5 text-xs cursor-pointer"
                 >
                   {[5, 10, 20, 50].map((size) => (
                     <option key={size} value={size}>

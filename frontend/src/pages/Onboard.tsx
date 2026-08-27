@@ -254,7 +254,7 @@ const Onboard: React.FC = () => {
                   <select
                     value={role}
                     onChange={(e: any) => setRole(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                    className="w-full glass-input pl-11 pr-4 py-3 cursor-pointer"
                   >
                     <option value="Employee">Employee (Standard Access)</option>
                     <option value="HR Manager">HR Manager (Personnel & Payroll)</option>
@@ -368,7 +368,7 @@ const Onboard: React.FC = () => {
                     required
                     value={departmentId}
                     onChange={(e) => setDepartmentId(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                    className="w-full glass-input pl-11 pr-4 py-3 cursor-pointer"
                   >
                     <option value="">Select a Department...</option>
                     {deptData?.map((dept) => (
@@ -389,7 +389,7 @@ const Onboard: React.FC = () => {
                   <select
                     value={managerId}
                     onChange={(e) => setManagerId(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                    className="w-full glass-input pl-11 pr-4 py-3 cursor-pointer"
                   >
                     <option value="">No Direct Manager (Unassigned)</option>
                     {managerData?.map((mgr) => (
@@ -432,7 +432,7 @@ const Onboard: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-700/50 text-white font-semibold rounded-xl transition duration-200 text-sm cursor-pointer shadow-lg hover:shadow-emerald-500/25 select-none"
+                className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition duration-200 text-sm cursor-pointer shadow-lg hover:shadow-emerald-500/25 select-none disabled:opacity-50"
               >
                 {submitting ? (
                   <>

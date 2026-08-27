@@ -97,7 +97,7 @@ export const CostBarChart: React.FC<ChartProps> = ({ data }) => {
                   width={barWidth + gap / 2}
                   height={chartHeight}
                   fill="transparent"
-                  className="hover:fill-white/[0.02] transition duration-200"
+                  className="hover:fill-white/2 transition duration-200"
                 />
 
                 {/* Main Color Bar */}

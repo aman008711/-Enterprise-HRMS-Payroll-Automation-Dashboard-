@@ -230,7 +230,7 @@ const Payroll: React.FC = () => {
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02]">
+                <tr className="border-b border-white/10 bg-white/2">
                   {isAdminOrHR && <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Employee</th>}
                   <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Pay Period</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Base Salary</th>
@@ -265,7 +265,7 @@ const Payroll: React.FC = () => {
                   </tr>
                 ) : (
                   payrollList.map((p) => (
-                    <tr key={p._id} className="bg-white/0 hover:bg-white/[0.02] transition">
+                    <tr key={p._id} className="bg-white/0 hover:bg-white/2 transition">
                       {isAdminOrHR && (
                         <td className="px-6 py-4 text-sm font-semibold text-white">
                           <span className="block">{p.employee?.firstName} {p.employee?.lastName}</span>
@@ -367,7 +367,7 @@ const Payroll: React.FC = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.02]">
+                  <tr className="border-b border-white/10 bg-white/2">
                     <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Department</th>
                     <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Gross Base</th>
                     <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Allowances</th>
@@ -398,7 +398,7 @@ const Payroll: React.FC = () => {
                     </tr>
                   ) : (
                     reportList.map((rep) => (
-                      <tr key={rep._id} className="bg-white/0 hover:bg-white/[0.02] transition">
+                      <tr key={rep._id} className="bg-white/0 hover:bg-white/2 transition">
                         <td className="px-6 py-4 text-sm font-bold text-white">
                           {rep.departmentName || 'Unassigned'}
                         </td>
@@ -436,7 +436,7 @@ const Payroll: React.FC = () => {
                   required
                   value={employeeId}
                   onChange={(e) => setEmployeeId(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                  className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
                 >
                   <option value="">Select Employee...</option>
                   {employees?.map((emp) => (
@@ -534,7 +534,7 @@ const Payroll: React.FC = () => {
                   <select
                     value={paymentMethod}
                     onChange={(e: any) => setPaymentMethod(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                    className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
                   >
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="Cheque">Cheque</option>
@@ -549,7 +549,7 @@ const Payroll: React.FC = () => {
                   <select
                     value={status}
                     onChange={(e: any) => setStatus(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#030014] border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 cursor-pointer"
+                    className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
                   >
                     <option value="Paid">Paid</option>
                     <option value="Unpaid">Unpaid</option>
