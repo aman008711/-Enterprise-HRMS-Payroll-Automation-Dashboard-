@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
+import { CostBarChart, StaffDonutChart, type ReportItem } from '../components/Charts';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -33,15 +34,7 @@ interface PayrollType {
   processedAt?: string;
 }
 
-interface ReportItem {
-  _id: string; // Department name
-  totalBaseSalary: number;
-  totalAllowances: number;
-  totalDeductions: number;
-  totalNetSalary: number;
-  avgNetSalary: number;
-  totalTransactions: number;
-}
+
 
 interface EmployeeSelect {
   _id: string;
@@ -340,7 +333,7 @@ const Payroll: React.FC = () => {
                 <span className="text-xl font-black text-white">
                   {formatCurrency(
                     reportList?.length 
-                      ? (reportList.reduce((acc, curr) => acc + curr.avgNetSalary, 0) / reportList.length) 
+                      ? (reportList.reduce((acc, curr) => acc + curr.averageNetSalary, 0) / reportList.length) 
                       : 0
                   )}
                 </span>
@@ -354,11 +347,19 @@ const Payroll: React.FC = () => {
               <div>
                 <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Transactions Run</span>
                 <span className="text-xl font-black text-white">
-                  {reportList?.reduce((acc, curr) => acc + curr.totalTransactions, 0) || 0} batches
+                  {reportList?.reduce((acc, curr) => acc + curr.payrollCount, 0) || 0} batches
                 </span>
               </div>
             </div>
           </div>
+
+          {/* Department Cost Analytics Charts */}
+          {!reportLoading && reportList && reportList.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 my-6">
+              <CostBarChart data={reportList} />
+              <StaffDonutChart data={reportList} />
+            </div>
+          )}
 
           {/* Department Breakdown table listing */}
           <div className="glass-card rounded-2xl p-6 border border-white/5 shadow-xl">
@@ -398,13 +399,15 @@ const Payroll: React.FC = () => {
                   ) : (
                     reportList.map((rep) => (
                       <tr key={rep._id} className="bg-white/0 hover:bg-white/[0.02] transition">
-                        <td className="px-6 py-4 text-sm font-bold text-white">{rep._id || 'Unassigned'}</td>
+                        <td className="px-6 py-4 text-sm font-bold text-white">
+                          {rep.departmentName || 'Unassigned'}
+                        </td>
                         <td className="px-6 py-4 text-sm text-gray-300">{formatCurrency(rep.totalBaseSalary)}</td>
                         <td className="px-6 py-4 text-sm text-emerald-400">+{formatCurrency(rep.totalAllowances)}</td>
                         <td className="px-6 py-4 text-sm text-red-400">-{formatCurrency(rep.totalDeductions)}</td>
                         <td className="px-6 py-4 text-sm text-white font-extrabold">{formatCurrency(rep.totalNetSalary)}</td>
-                        <td className="px-6 py-4 text-sm text-brand-400 font-semibold">{formatCurrency(rep.avgNetSalary)}</td>
-                        <td className="px-6 py-4 text-sm text-gray-400 font-bold">{rep.totalTransactions}</td>
+                        <td className="px-6 py-4 text-sm text-brand-400 font-semibold">{formatCurrency(rep.averageNetSalary)}</td>
+                        <td className="px-6 py-4 text-sm text-gray-400 font-bold">{rep.payrollCount}</td>
                       </tr>
                     ))
                   )}

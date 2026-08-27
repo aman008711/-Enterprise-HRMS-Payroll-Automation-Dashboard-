@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
+import api from './utils/api';
+import { CostBarChart, StaffDonutChart } from './components/Charts';
 import Employees from './pages/Employees';
 import Onboard from './pages/Onboard';
 import Leaves from './pages/Leaves';
@@ -46,6 +48,17 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 // 1. Overview Dashboard Placeholder
 const OverviewPage: React.FC = () => {
   const { user } = useAuth();
+  const isAdminOrHR = user?.role === 'Admin' || user?.role === 'HR Manager';
+
+  // Fetch report aggregate data for charts
+  const { data: reportList } = useQuery({
+    queryKey: ['payroll-report-overview'],
+    queryFn: async () => {
+      const res = await api.get('/payroll/report');
+      return res.data?.data;
+    },
+    enabled: isAdminOrHR
+  });
   
   return (
     <div className="space-y-6">
@@ -94,6 +107,14 @@ const OverviewPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Main Admin/HR Dashboard Cost Analytics Charts */}
+      {isAdminOrHR && reportList && reportList.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CostBarChart data={reportList} />
+          <StaffDonutChart data={reportList} />
+        </div>
+      )}
     </div>
   );
 };
