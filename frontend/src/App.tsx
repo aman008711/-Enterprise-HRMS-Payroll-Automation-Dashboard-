@@ -5,6 +5,8 @@ import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Employees from './pages/Employees';
 import Onboard from './pages/Onboard';
+import Leaves from './pages/Leaves';
+import Payroll from './pages/Payroll';
 import DashboardLayout from './components/DashboardLayout';
 import { Users, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
 
@@ -97,27 +99,7 @@ const OverviewPage: React.FC = () => {
 };
 
 
-// 3. Leaves Page Placeholder
-const LeavesPage: React.FC = () => (
-  <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-xl">
-    <h3 className="text-lg font-bold text-white mb-2">Leave Administration</h3>
-    <p className="text-gray-400 text-sm">Review leave requests, calendar periods, and approval lifecycle queues.</p>
-    <div className="mt-8 border border-dashed border-white/10 rounded-2xl h-48 flex items-center justify-center text-gray-500 text-sm">
-      Leave Calendar Board Placeholder
-    </div>
-  </div>
-);
 
-// 4. Payroll Page Placeholder
-const PayrollPage: React.FC = () => (
-  <div className="glass-card rounded-2xl p-8 border border-white/5 shadow-xl">
-    <h3 className="text-lg font-bold text-white mb-2">Financial Records & Payslips</h3>
-    <p className="text-gray-400 text-sm">Batch payroll processing, allowances calculations, and downloadable PDF reports.</p>
-    <div className="mt-8 border border-dashed border-white/10 rounded-2xl h-48 flex items-center justify-center text-gray-500 text-sm">
-      Payroll Ledger Board Placeholder
-    </div>
-  </div>
-);
 
 const AppRoutes: React.FC = () => {
   return (
@@ -137,8 +119,8 @@ const AppRoutes: React.FC = () => {
           <Route index element={<OverviewPage />} />
           <Route path="employees" element={<Employees />} />
           <Route path="onboard" element={<Onboard />} />
-          <Route path="leaves" element={<LeavesPage />} />
-          <Route path="payroll" element={<PayrollPage />} />
+          <Route path="leaves" element={<Leaves />} />
+          <Route path="payroll" element={<Payroll />} />
         </Route>
 
         {/* Catch-all Redirect */}
