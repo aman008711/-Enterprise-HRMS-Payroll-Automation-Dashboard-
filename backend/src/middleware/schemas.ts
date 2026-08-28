@@ -74,6 +74,7 @@ export const createPayrollSchema = z.object({
 
 // 6. Expense Reimbursement schemas
 export const createExpenseSchema = z.object({
+  employeeId: objectIdSchema.optional(),
   title: z.string().trim().min(3, { message: 'Title must be at least 3 characters long' }),
   category: z.enum(['Travel', 'Medical', 'Hardware', 'Other'], {
     errorMap: () => ({ message: 'Invalid expense category selection' })

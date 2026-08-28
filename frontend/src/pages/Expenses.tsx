@@ -44,6 +44,7 @@ const Expenses: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   // New Claim Form States
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<'Travel' | 'Medical' | 'Hardware' | 'Other'>('Travel');
   const [amount, setAmount] = useState<number>(0);
@@ -64,6 +65,16 @@ const Expenses: React.FC = () => {
     }
   });
 
+  // Query active employees list for assignment dropdown (Admin/HR Manager only)
+  const { data: employeesList } = useQuery({
+    queryKey: ['employees-list-dropdown'],
+    queryFn: async () => {
+      const res = await api.get('/employees');
+      return res.data?.data as any[];
+    },
+    enabled: isAdminOrHR
+  });
+
   // 2. File Claim Mutation
   const fileClaimMutation = useMutation({
     mutationFn: async (payload: any) => {
@@ -76,6 +87,7 @@ const Expenses: React.FC = () => {
       setModalOpen(false);
       
       // Reset form
+      setSelectedEmployeeId('');
       setTitle('');
       setCategory('Travel');
       setAmount(0);
@@ -114,6 +126,7 @@ const Expenses: React.FC = () => {
       return;
     }
     fileClaimMutation.mutate({
+      employeeId: isAdminOrHR && selectedEmployeeId ? selectedEmployeeId : undefined,
       title,
       category,
       amount: Number(amount),
@@ -396,6 +409,26 @@ const Expenses: React.FC = () => {
             <p className="text-gray-400 text-xs mb-6 font-medium">Provide purchase descriptions and costs to file a request.</p>
 
             <form onSubmit={handleFileClaim} className="space-y-4">
+              {isAdminOrHR && (
+                <div>
+                  <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">
+                    Assign to Employee
+                  </label>
+                  <select
+                    value={selectedEmployeeId}
+                    onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                    className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
+                  >
+                    <option value="" className="bg-[#13112b] text-white">-- Myself --</option>
+                    {employeesList?.map((emp) => (
+                      <option key={emp._id} value={emp._id} className="bg-[#13112b] text-white">
+                        {emp.firstName} {emp.lastName} ({emp.employeeId})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">
                   Expense Title

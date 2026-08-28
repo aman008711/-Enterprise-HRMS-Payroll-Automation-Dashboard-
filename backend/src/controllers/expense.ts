@@ -9,16 +9,28 @@ import { createAuditLog } from '../utils/audit';
 // @route   POST /api/expenses
 // @access  Private (Employee role)
 export const createExpense = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const { title, category, amount, description } = req.body;
+  const { employeeId, title, category, amount, description } = req.body;
 
   try {
-    const employee = await Employee.findOne({ user: req.user?._id }).lean();
-    if (!employee) {
-      return next(new ErrorResponse('Employee profile not found', 404));
+    let targetEmployeeId;
+
+    const isAdminOrHR = req.user?.role === 'Admin' || req.user?.role === 'HR Manager';
+    if (isAdminOrHR && employeeId) {
+      const targetEmployee = await Employee.findById(employeeId).lean();
+      if (!targetEmployee) {
+        return next(new ErrorResponse('Target employee profile not found', 404));
+      }
+      targetEmployeeId = targetEmployee._id;
+    } else {
+      const employee = await Employee.findOne({ user: req.user?._id }).lean();
+      if (!employee) {
+        return next(new ErrorResponse('Employee profile not found', 404));
+      }
+      targetEmployeeId = employee._id;
     }
 
     const expense = await Expense.create({
-      employee: employee._id,
+      employee: targetEmployeeId,
       title,
       category,
       amount,
