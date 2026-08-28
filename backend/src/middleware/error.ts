@@ -23,8 +23,9 @@ export const errorHandler = (
   let error = { ...err };
   error.message = err.message;
 
-  // Log full error for development debugging (avoid logging during test run environment)
-  if (process.env.NODE_ENV !== 'test') {
+  // Log server errors for development debugging (avoid printing expected 4xx client errors)
+  const statusCode = error.statusCode || err.statusCode || 500;
+  if (process.env.NODE_ENV !== 'test' && statusCode >= 500) {
     console.error(err);
   }
 

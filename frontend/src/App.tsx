@@ -13,6 +13,7 @@ const Employees = lazy(() => import('./pages/Employees'));
 const Onboard = lazy(() => import('./pages/Onboard'));
 const Leaves = lazy(() => import('./pages/Leaves'));
 const Payroll = lazy(() => import('./pages/Payroll'));
+const Expenses = lazy(() => import('./pages/Expenses'));
 
 // Initialize TanStack Query Client with global cache rules
 const queryClient = new QueryClient({
@@ -153,6 +154,7 @@ const AppRoutes: React.FC = () => {
             <Route path="onboard" element={<Onboard />} />
             <Route path="leaves" element={<Leaves />} />
             <Route path="payroll" element={<Payroll />} />
+            <Route path="expenses" element={<Expenses />} />
           </Route>
 
           {/* Catch-all Redirect */}

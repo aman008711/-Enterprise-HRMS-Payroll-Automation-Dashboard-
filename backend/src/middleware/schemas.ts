@@ -71,3 +71,19 @@ export const createPayrollSchema = z.object({
   message: 'Pay period end date cannot be earlier than start date',
   path: ['payPeriodEnd']
 });
+
+// 6. Expense Reimbursement schemas
+export const createExpenseSchema = z.object({
+  title: z.string().trim().min(3, { message: 'Title must be at least 3 characters long' }),
+  category: z.enum(['Travel', 'Medical', 'Hardware', 'Other'], {
+    errorMap: () => ({ message: 'Invalid expense category selection' })
+  }),
+  amount: z.number().positive({ message: 'Expense amount must be greater than 0' }),
+  description: z.string().trim().optional()
+});
+
+export const updateExpenseStatusSchema = z.object({
+  status: z.enum(['Approved', 'Rejected'], {
+    errorMap: () => ({ message: 'Status must be Approved or Rejected' })
+  })
+});

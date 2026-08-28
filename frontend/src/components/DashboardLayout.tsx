@@ -10,7 +10,8 @@ import {
   Menu,
   X,
   User as UserIcon,
-  ShieldAlert
+  ShieldAlert,
+  Briefcase
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -46,6 +47,12 @@ const DashboardLayout: React.FC = () => {
       name: 'Payroll & Costs',
       path: '/payroll',
       icon: CreditCard,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Expenses & Claims',
+      path: '/expenses',
+      icon: Briefcase,
       roles: ['Admin', 'HR Manager', 'Employee']
     }
   ];

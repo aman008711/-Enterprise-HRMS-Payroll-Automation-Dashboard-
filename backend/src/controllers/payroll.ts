@@ -5,6 +5,7 @@ import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
 import { generatePayslipPDF } from '../utils/pdf';
+import Expense from '../models/Expense';
 
 // @desc    Get payroll history lists with nested employee and department details via aggregation
 // @route   GET /api/payroll
@@ -164,16 +165,39 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
       return next(new ErrorResponse('Employee profile not found', 404));
     }
 
+    // Query approved, unpaid expenses for the target employee to integrate as allowances
+    const approvedExpenses = await Expense.find({
+      employee: employeeId,
+      status: 'Approved',
+      paymentStatus: 'Unpaid'
+    }).lean();
+
+    const totalExpenseReimbursement = approvedExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const finalAllowances = (allowances || 0) + totalExpenseReimbursement;
+
     const payroll = await Payroll.create({
       employee: employeeId,
       payPeriodStart: new Date(payPeriodStart),
       payPeriodEnd: new Date(payPeriodEnd),
       baseSalary,
-      allowances: allowances || 0,
+      allowances: finalAllowances,
       deductions: deductions || 0,
       status: status || 'Unpaid',
       paymentMethod: paymentMethod || 'Bank Transfer'
     });
+
+    // Mark matched expenses as Paid and link them to the newly created payroll slip
+    if (approvedExpenses.length > 0) {
+      await Expense.updateMany(
+        { _id: { $in: approvedExpenses.map(e => e._id) } },
+        { 
+          $set: { 
+            paymentStatus: 'Paid',
+            processedInPayroll: payroll._id 
+          }
+        }
+      );
+    }
 
     res.status(201).json({
       success: true,

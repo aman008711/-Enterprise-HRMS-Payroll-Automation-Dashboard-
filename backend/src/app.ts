@@ -11,6 +11,7 @@ import employeeRoutes from './routes/employee';
 import departmentRoutes from './routes/department';
 import leaveRoutes from './routes/leave';
 import payrollRoutes from './routes/payroll';
+import expenseRoutes from './routes/expense';
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/payroll', payrollRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Basic health check route
 app.get('/health', (req: Request, res: Response) => {
