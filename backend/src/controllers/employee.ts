@@ -13,7 +13,8 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
     const employees = await Employee.find()
       .populate('user', 'email role')
       .populate('department', 'name code')
-      .populate('manager', 'firstName lastName employeeId jobTitle');
+      .populate('manager', 'firstName lastName employeeId jobTitle')
+      .lean();
 
     res.status(200).json({
       success: true,

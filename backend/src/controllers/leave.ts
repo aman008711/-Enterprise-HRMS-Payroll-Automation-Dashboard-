@@ -15,7 +15,7 @@ export const getLeaves = async (req: AuthenticatedRequest, res: Response, next: 
 
     // If logged-in user is an Employee, restrict to their leaves only
     if (req.user?.role === 'Employee') {
-      const employee = await Employee.findOne({ user: req.user._id });
+      const employee = await Employee.findOne({ user: req.user._id }).lean();
       if (!employee) {
         return next(new ErrorResponse('Employee profile not found', 404));
       }
@@ -129,7 +129,7 @@ export const createLeaveRequest = async (req: AuthenticatedRequest, res: Respons
       return next(new ErrorResponse('Please provide all leave details', 400));
     }
 
-    const employee = await Employee.findOne({ user: req.user?._id });
+    const employee = await Employee.findOne({ user: req.user?._id }).lean();
     if (!employee) {
       return next(new ErrorResponse('Employee profile not found', 404));
     }
@@ -171,7 +171,7 @@ export const updateLeaveStatus = async (req: AuthenticatedRequest, res: Response
       return next(new ErrorResponse('Invalid status. Choose Approved or Rejected', 400));
     }
 
-    const manager = await Employee.findOne({ user: req.user?._id });
+    const manager = await Employee.findOne({ user: req.user?._id }).lean();
     if (!manager) {
       return next(new ErrorResponse('Manager employee profile not found', 404));
     }

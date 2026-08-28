@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
+import mongoSanitize from 'express-mongo-sanitize';
 import { errorHandler } from './middleware/error';
 import authRoutes from './routes/auth';
 import employeeRoutes from './routes/employee';
@@ -15,7 +17,13 @@ const app = express();
 // 1. Security Headers via Helmet
 app.use(helmet());
 
-// 2. Cross-Origin Resource Sharing (CORS) Configuration
+// 2. Payload Response Compression
+app.use(compression());
+
+// 3. NoSQL Injection Prevention
+app.use(mongoSanitize());
+
+// 4. Cross-Origin Resource Sharing (CORS) Configuration
 const allowedOrigins = process.env.CLIENT_ORIGIN 
   ? process.env.CLIENT_ORIGIN.split(',') 
   : ['http://localhost:5173'];
@@ -33,7 +41,7 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// 3. Global Rate Limiter (Brute-force protection)
+// 5. Global Rate Limiter (Brute-force protection)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs

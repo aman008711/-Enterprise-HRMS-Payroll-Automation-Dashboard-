@@ -1,23 +1,27 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './hooks/useAuth';
-import Login from './pages/Login';
 import api from './utils/api';
 import { CostBarChart, StaffDonutChart } from './components/Charts';
-import Employees from './pages/Employees';
-import Onboard from './pages/Onboard';
-import Leaves from './pages/Leaves';
-import Payroll from './pages/Payroll';
 import DashboardLayout from './components/DashboardLayout';
 import { Users, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
 
-// Initialize TanStack Query Client
+// Route Lazy-Loading for code splitting
+const Login = lazy(() => import('./pages/Login'));
+const Employees = lazy(() => import('./pages/Employees'));
+const Onboard = lazy(() => import('./pages/Onboard'));
+const Leaves = lazy(() => import('./pages/Leaves'));
+const Payroll = lazy(() => import('./pages/Payroll'));
+
+// Initialize TanStack Query Client with global cache rules
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      retry: 1
+      retry: 1,
+      staleTime: 2 * 60 * 1000, // 2 minutes (prevents redundant API spam)
+      gcTime: 5 * 60 * 1000     // 5 minutes garbage collection limits
     }
   }
 });
@@ -122,31 +126,39 @@ const OverviewPage: React.FC = () => {
 
 
 
+const RouteSuspenseFallback: React.FC = () => (
+  <div className="w-full h-[60vh] flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin" />
+  </div>
+);
+
 const AppRoutes: React.FC = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        {/* Protected Dashboard Route Tree */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<OverviewPage />} />
-          <Route path="employees" element={<Employees />} />
-          <Route path="onboard" element={<Onboard />} />
-          <Route path="leaves" element={<Leaves />} />
-          <Route path="payroll" element={<Payroll />} />
-        </Route>
+      <Suspense fallback={<RouteSuspenseFallback />}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          {/* Protected Dashboard Route Tree */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<OverviewPage />} />
+            <Route path="employees" element={<Employees />} />
+            <Route path="onboard" element={<Onboard />} />
+            <Route path="leaves" element={<Leaves />} />
+            <Route path="payroll" element={<Payroll />} />
+          </Route>
 
-        {/* Catch-all Redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch-all Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 };

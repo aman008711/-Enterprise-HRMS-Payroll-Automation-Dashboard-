@@ -15,7 +15,7 @@ export const getPayrollHistory = async (req: AuthenticatedRequest, res: Response
 
     // Restrict standard Employee users to viewing only their own slips
     if (req.user?.role === 'Employee') {
-      const employee = await Employee.findOne({ user: req.user._id });
+      const employee = await Employee.findOne({ user: req.user._id }).lean();
       if (!employee) {
         return next(new ErrorResponse('Employee profile not found', 404));
       }
@@ -203,7 +203,8 @@ export const downloadPayslip = async (req: AuthenticatedRequest, res: Response, 
       .populate({
         path: 'employee',
         populate: { path: 'department', select: 'name code' }
-      });
+      })
+      .lean();
 
     if (!payroll) {
       return next(new ErrorResponse('Payroll record not found', 404));
@@ -213,7 +214,7 @@ export const downloadPayslip = async (req: AuthenticatedRequest, res: Response, 
 
     // Access control: Employees can only view/download their own payroll records
     if (req.user?.role === 'Employee') {
-      const currentEmp = await Employee.findOne({ user: req.user._id });
+      const currentEmp = await Employee.findOne({ user: req.user._id }).lean();
       if (!currentEmp || currentEmp._id.toString() !== employee?._id?.toString()) {
         return next(new ErrorResponse('Not authorized to access this payslip', 403));
       }
