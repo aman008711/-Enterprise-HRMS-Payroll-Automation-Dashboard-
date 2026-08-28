@@ -44,6 +44,11 @@
     font-family: var(--font-heading);
     letter-spacing: -0.025em;
   }
+
+  option {
+    background-color: #13112b;
+    color: #ffffff;
+  }
 }
 
 /* Glassmorphism custom design utility classes */
