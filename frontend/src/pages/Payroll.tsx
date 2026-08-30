@@ -41,6 +41,7 @@ interface EmployeeSelect {
   firstName: string;
   lastName: string;
   employeeId: string;
+  baseSalary: number;
 }
 
 const Payroll: React.FC = () => {
@@ -435,7 +436,16 @@ const Payroll: React.FC = () => {
                 <select
                   required
                   value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
+                  onChange={(e) => {
+                    const empId = e.target.value;
+                    setEmployeeId(empId);
+                    const selected = employees?.find(emp => emp._id === empId);
+                    if (selected) {
+                      setBaseSalary(selected.baseSalary || 0);
+                    } else {
+                      setBaseSalary(0);
+                    }
+                  }}
                   className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
                 >
                   <option value="">Select Employee...</option>

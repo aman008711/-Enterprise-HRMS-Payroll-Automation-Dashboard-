@@ -51,6 +51,7 @@ const Onboard: React.FC = () => {
   const [jobTitle, setJobTitle] = useState('');
   const [departmentId, setDepartmentId] = useState('');
   const [managerId, setManagerId] = useState('');
+  const [baseSalary, setBaseSalary] = useState('');
 
   // Validation States
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -144,7 +145,8 @@ const Onboard: React.FC = () => {
         phone: phone || undefined,
         jobTitle,
         departmentId,
-        managerId: managerId || undefined
+        managerId: managerId || undefined,
+        baseSalary: Number(baseSalary) || 0
       });
 
       // Navigate back to directory
@@ -398,6 +400,24 @@ const Onboard: React.FC = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">
+                  Base Salary ($)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={baseSalary}
+                    onChange={(e) => setBaseSalary(e.target.value)}
+                    placeholder="e.g. 5000"
+                    className="w-full pl-8 pr-4 py-3 glass-input text-sm"
+                  />
                 </div>
               </div>
             </div>

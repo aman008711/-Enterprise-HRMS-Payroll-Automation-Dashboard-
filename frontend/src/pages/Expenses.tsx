@@ -83,7 +83,7 @@ const Expenses: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      setSuccessMsg('Expense claim filed successfully!');
+      setSuccessMsg('Expense claim filed successfully! Manager notification email & chat webhook alert dispatched.');
       setModalOpen(false);
       
       // Reset form

@@ -11,6 +11,7 @@ export interface IEmployee extends Document {
   department: mongoose.Types.ObjectId;
   manager?: mongoose.Types.ObjectId;
   status: 'Active' | 'On Leave' | 'Terminated';
+  baseSalary: number;
   hireDate: Date;
 }
 
@@ -63,6 +64,11 @@ const EmployeeSchema: Schema<IEmployee> = new Schema(
       type: String,
       enum: ['Active', 'On Leave', 'Terminated'],
       default: 'Active'
+    },
+    baseSalary: {
+      type: Number,
+      default: 0,
+      min: [0, 'Base salary cannot be negative']
     },
     hireDate: {
       type: Date,

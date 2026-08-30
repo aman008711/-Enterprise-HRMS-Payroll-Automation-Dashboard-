@@ -71,6 +71,7 @@ const seedDB = async () => {
       jobTitle: 'Director of Technology',
       department: engineering._id,
       status: 'Active',
+      baseSalary: 12000,
       hireDate: new Date()
     });
 
@@ -86,6 +87,7 @@ const seedDB = async () => {
       department: hr._id,
       manager: adminEmployee._id,
       status: 'Active',
+      baseSalary: 8500,
       hireDate: new Date()
     });
 

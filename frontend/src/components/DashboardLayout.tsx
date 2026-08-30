@@ -11,7 +11,11 @@ import {
   X,
   User as UserIcon,
   ShieldAlert,
-  Briefcase
+  Briefcase,
+  Clock,
+  Settings,
+  Award,
+  FolderLock
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -54,6 +58,36 @@ const DashboardLayout: React.FC = () => {
       path: '/expenses',
       icon: Briefcase,
       roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Time & Attendance',
+      path: '/attendance',
+      icon: Clock,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Shift Planner',
+      path: '/schedule',
+      icon: Calendar,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Performance & Appraisals',
+      path: '/reviews',
+      icon: Award,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Document Cabinet',
+      path: '/documents',
+      icon: FolderLock,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'System Settings',
+      path: '/settings',
+      icon: Settings,
+      roles: ['Admin']
     }
   ];
 

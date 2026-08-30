@@ -14,6 +14,11 @@ const Onboard = lazy(() => import('./pages/Onboard'));
 const Leaves = lazy(() => import('./pages/Leaves'));
 const Payroll = lazy(() => import('./pages/Payroll'));
 const Expenses = lazy(() => import('./pages/Expenses'));
+const Attendance = lazy(() => import('./pages/Attendance'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Schedule = lazy(() => import('./pages/Schedule'));
+const Reviews = lazy(() => import('./pages/Reviews'));
+const Documents = lazy(() => import('./pages/Documents'));
 
 // Initialize TanStack Query Client with global cache rules
 const queryClient = new QueryClient({
@@ -28,8 +33,11 @@ const queryClient = new QueryClient({
 });
 
 // Guard helper to protect routes and check user role credentials
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute: React.FC<{ 
+  children: React.ReactNode; 
+  allowedRoles?: ('Admin' | 'HR Manager' | 'Employee')[] 
+}> = ({ children, allowedRoles }) => {
+  const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -41,6 +49,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Redirect unauthorized roles to dashboard home
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -150,11 +163,37 @@ const AppRoutes: React.FC = () => {
             }
           >
             <Route index element={<OverviewPage />} />
-            <Route path="employees" element={<Employees />} />
-            <Route path="onboard" element={<Onboard />} />
+            <Route 
+              path="employees" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin', 'HR Manager']}>
+                  <Employees />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="onboard" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin', 'HR Manager']}>
+                  <Onboard />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="leaves" element={<Leaves />} />
             <Route path="payroll" element={<Payroll />} />
             <Route path="expenses" element={<Expenses />} />
+            <Route path="attendance" element={<Attendance />} />
+            <Route path="schedule" element={<Schedule />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="documents" element={<Documents />} />
+            <Route 
+              path="settings" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <Settings />
+                </ProtectedRoute>
+              } 
+            />
           </Route>
 
           {/* Catch-all Redirect */}

@@ -1,9 +1,11 @@
 import { Response, NextFunction } from 'express';
 import Expense from '../models/Expense';
 import Employee from '../models/Employee';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
+import { sendEmail, sendChatNotification } from '../utils/notifications';
 
 // @desc    File a new expense reimbursement request
 // @route   POST /api/expenses
@@ -50,6 +52,72 @@ export const createExpense = async (req: AuthenticatedRequest, res: Response, ne
       details: `Claim category: ${expense.category}, amount: $${expense.amount}`,
       req
     });
+
+    // Fire Email & Chat Webhook Notifications to Reporting Manager
+    try {
+      const dbEmployee = await Employee.findById(targetEmployeeId).lean();
+      if (dbEmployee) {
+        const empName = `${dbEmployee.firstName} ${dbEmployee.lastName}`;
+
+        // Discord/Slack Channel Webhook Alert
+        await sendChatNotification({
+          title: '💸 New Expense Claim Filed',
+          description: `An employee has filed a new expense reimbursement claim requiring review.`,
+          fields: [
+            { name: 'Employee', value: empName, inline: true },
+            { name: 'Category', value: category, inline: true },
+            { name: 'Amount', value: `$${amount.toFixed(2)}`, inline: true },
+            { name: 'Title', value: title, inline: false },
+            { name: 'Description', value: description || 'No description provided', inline: false }
+          ]
+        });
+
+        let recipientEmail = '';
+        let recipientName = 'HR Department';
+
+        if (dbEmployee.manager) {
+          const managerEmployee = await Employee.findById(dbEmployee.manager).populate('user', 'email').lean() as any;
+          if (managerEmployee && managerEmployee.user?.email) {
+            recipientEmail = managerEmployee.user.email;
+            recipientName = `${managerEmployee.firstName} ${managerEmployee.lastName}`;
+          }
+        }
+
+        // Fallback: If no direct manager is assigned, find the HR Manager user(s) to notify
+        if (!recipientEmail) {
+          const hrUser = await User.findOne({ role: 'HR Manager' }).lean();
+          if (hrUser) {
+            recipientEmail = hrUser.email;
+            const hrEmployee = await Employee.findOne({ user: hrUser._id }).lean();
+            if (hrEmployee) {
+              recipientName = `${hrEmployee.firstName} ${hrEmployee.lastName}`;
+            }
+          }
+        }
+
+        if (recipientEmail) {
+          await sendEmail({
+            to: recipientEmail,
+            subject: `💸 Action Required: Expense Claim Submitted by ${empName}`,
+            html: `
+              <h3>Dear ${recipientName},</h3>
+              <p>An expense reimbursement claim has been submitted by <strong>${empName}</strong> for review.</p>
+              <ul>
+                <li><strong>Title:</strong> ${title}</li>
+                <li><strong>Category:</strong> ${category}</li>
+                <li><strong>Amount:</strong> $${amount.toFixed(2)}</li>
+                <li><strong>Description:</strong> ${description || 'N/A'}</li>
+              </ul>
+              <p>Please log into the Enterprise HRMS portal to approve or reject this claim.</p>
+              <br/>
+              <p>Best regards,<br/>Enterprise HRMS Portal</p>
+            `
+          });
+        }
+      }
+    } catch (notifyErr) {
+      console.error('Failed to process expense notifications:', notifyErr);
+    }
   } catch (err) {
     next(err);
   }

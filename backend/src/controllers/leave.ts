@@ -2,9 +2,11 @@ import { Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import LeaveRequest from '../models/LeaveRequest';
 import Employee from '../models/Employee';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
+import { sendEmail, sendChatNotification } from '../utils/notifications';
 
 // @desc    Get leave requests with joining relations and computed durations via aggregation
 // @route   GET /api/leaves
@@ -155,6 +157,67 @@ export const createLeaveRequest = async (req: AuthenticatedRequest, res: Respons
       details: `Leave type: ${leave.type}, dates: ${startDate} to ${endDate}`,
       req
     });
+
+    // Fire Email & Chat Webhook Notifications to Reporting Manager
+    try {
+      const empName = `${employee.firstName} ${employee.lastName}`;
+      
+      // Discord/Slack Channel Webhook Alert
+      await sendChatNotification({
+        title: '📅 New Leave Request Submitted',
+        description: `An employee has filed a new leave request requiring manager approval.`,
+        fields: [
+          { name: 'Employee', value: empName, inline: true },
+          { name: 'Type', value: type, inline: true },
+          { name: 'Dates', value: `${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`, inline: false },
+          { name: 'Reason', value: reason, inline: false }
+        ]
+      });
+
+      let recipientEmail = '';
+      let recipientName = 'HR Department';
+
+      if (employee.manager) {
+        const managerEmployee = await Employee.findById(employee.manager).populate('user', 'email').lean() as any;
+        if (managerEmployee && managerEmployee.user?.email) {
+          recipientEmail = managerEmployee.user.email;
+          recipientName = `${managerEmployee.firstName} ${managerEmployee.lastName}`;
+        }
+      }
+
+      // Fallback: If no direct manager is assigned, find the HR Manager user(s) to notify
+      if (!recipientEmail) {
+        const hrUser = await User.findOne({ role: 'HR Manager' }).lean();
+        if (hrUser) {
+          recipientEmail = hrUser.email;
+          const hrEmployee = await Employee.findOne({ user: hrUser._id }).lean();
+          if (hrEmployee) {
+            recipientName = `${hrEmployee.firstName} ${hrEmployee.lastName}`;
+          }
+        }
+      }
+
+      if (recipientEmail) {
+        await sendEmail({
+          to: recipientEmail,
+          subject: `📅 Action Required: Leave Request Submitted by ${empName}`,
+          html: `
+            <h3>Dear ${recipientName},</h3>
+            <p>A leave request has been submitted by <strong>${empName}</strong> for review.</p>
+            <ul>
+              <li><strong>Type:</strong> ${type}</li>
+              <li><strong>Dates:</strong> ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}</li>
+              <li><strong>Reason:</strong> ${reason}</li>
+            </ul>
+            <p>Please log into the Enterprise HRMS portal to approve or reject this request.</p>
+            <br/>
+            <p>Best regards,<br/>Enterprise HRMS Portal</p>
+          `
+        });
+      }
+    } catch (notifyErr) {
+      console.error('Failed to process leave notifications:', notifyErr);
+    }
   } catch (err) {
     next(err);
   }

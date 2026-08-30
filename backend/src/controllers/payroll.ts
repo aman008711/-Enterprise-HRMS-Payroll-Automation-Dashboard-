@@ -4,8 +4,18 @@ import Employee from '../models/Employee';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
-import { generatePayslipPDF } from '../utils/pdf';
+import { generatePayslipPDF, generatePayslipPDFBuffer } from '../utils/pdf';
+import { sendEmail } from '../utils/notifications';
 import Expense from '../models/Expense';
+import Attendance from '../models/Attendance';
+import LeaveRequest from '../models/LeaveRequest';
+
+const getLocalDateString = (d: Date = new Date()): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 // @desc    Get payroll history lists with nested employee and department details via aggregation
 // @route   GET /api/payroll
@@ -165,6 +175,28 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
       return next(new ErrorResponse('Employee profile not found', 404));
     }
 
+    // Prevent overlapping pay periods for the same employee (double payment prevention)
+    const overlappingPayroll = await Payroll.findOne({
+      employee: employeeId,
+      $or: [
+        {
+          payPeriodStart: { $lte: new Date(payPeriodEnd) },
+          payPeriodEnd: { $gte: new Date(payPeriodStart) }
+        }
+      ]
+    });
+
+    if (overlappingPayroll) {
+      const existingStart = new Date(overlappingPayroll.payPeriodStart).toLocaleDateString();
+      const existingEnd = new Date(overlappingPayroll.payPeriodEnd).toLocaleDateString();
+      return next(
+        new ErrorResponse(
+          `A payroll ledger already exists that overlaps with this pay run: covers ${existingStart} to ${existingEnd} for this employee.`,
+          400
+        )
+      );
+    }
+
     // Query approved, unpaid expenses for the target employee to integrate as allowances
     const approvedExpenses = await Expense.find({
       employee: employeeId,
@@ -175,13 +207,74 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
     const totalExpenseReimbursement = approvedExpenses.reduce((sum, exp) => sum + exp.amount, 0);
     const finalAllowances = (allowances || 0) + totalExpenseReimbursement;
 
+    // Query employee attendance logs and approved leaves to calculate automated deductions
+    const startStr = getLocalDateString(new Date(payPeriodStart));
+    const endStr = getLocalDateString(new Date(payPeriodEnd));
+
+    const attendanceLogs = await Attendance.find({
+      employee: employeeId,
+      dateString: { $gte: startStr, $lte: endStr }
+    }).lean();
+
+    const approvedLeaves = await LeaveRequest.find({
+      employee: employeeId,
+      status: 'Approved',
+      startDate: { $lte: new Date(payPeriodEnd) },
+      endDate: { $gte: new Date(payPeriodStart) }
+    }).lean();
+
+    let computedDeductions = 0;
+
+    const attendanceMap = new Map<string, any>();
+    attendanceLogs.forEach((log) => {
+      attendanceMap.set(log.dateString, log);
+    });
+
+    const isDateOnLeave = (d: Date) => {
+      return approvedLeaves.some((leave) => {
+        const lStart = new Date(leave.startDate);
+        const lEnd = new Date(leave.endDate);
+        lStart.setHours(0, 0, 0, 0);
+        lEnd.setHours(23, 59, 59, 999);
+        return d >= lStart && d <= lEnd;
+      });
+    };
+
+    let current = new Date(payPeriodStart);
+    const periodEnd = new Date(payPeriodEnd);
+
+    while (current <= periodEnd) {
+      const dayOfWeek = current.getDay();
+      // Skip Saturday (6) and Sunday (0)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        const dateStr = getLocalDateString(current);
+        const log = attendanceMap.get(dateStr);
+
+        if (log) {
+          if (log.status === 'Late') {
+            computedDeductions += 15.0; // $15 late check-in penalty
+          } else if (log.status === 'Absent') {
+            computedDeductions += 50.0; // $50 absent day penalty
+          }
+        } else {
+          // No clock-in log. Verify if covered by approved leave request
+          if (!isDateOnLeave(current)) {
+            computedDeductions += 50.0; // $50 unexcused absence penalty
+          }
+        }
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    const finalDeductions = (deductions || 0) + computedDeductions;
+
     const payroll = await Payroll.create({
       employee: employeeId,
       payPeriodStart: new Date(payPeriodStart),
       payPeriodEnd: new Date(payPeriodEnd),
       baseSalary,
       allowances: finalAllowances,
-      deductions: deductions || 0,
+      deductions: finalDeductions,
       status: status || 'Unpaid',
       paymentMethod: paymentMethod || 'Bank Transfer'
     });
@@ -212,6 +305,44 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
       details: `Period: ${payPeriodStart} to ${payPeriodEnd}. Net salary: ${payroll.netSalary}`,
       req
     });
+
+    // Fire Email Notification with attached PDF Payslip to the Employee
+    try {
+      const dbEmployee = await Employee.findById(employeeId).populate('user', 'email').populate('department').lean() as any;
+      if (dbEmployee && dbEmployee.user?.email) {
+        // Compile populated payroll data matching PDF generator requirements
+        const populatedPayroll = {
+          ...payroll.toObject(),
+          employee: dbEmployee,
+          department: dbEmployee.department
+        };
+
+        const pdfBuffer = await generatePayslipPDFBuffer(populatedPayroll);
+        const periodMonth = new Date(payPeriodStart).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        await sendEmail({
+          to: dbEmployee.user.email,
+          subject: `📄 Secure Payslip Ready: ${periodMonth}`,
+          html: `
+            <h3>Dear ${dbEmployee.firstName} ${dbEmployee.lastName},</h3>
+            <p>Your monthly payslip for <strong>${periodMonth}</strong> has been generated and is ready for download.</p>
+            <p>We have attached a secure copy of your PDF payslip to this email for your convenience.</p>
+            <p>You can also log into the Enterprise HRMS portal at any time to review your salary details, download older slips, or file expense claims.</p>
+            <br/>
+            <p>Best regards,<br/>Enterprise HRMS Portal</p>
+          `,
+          attachments: [
+            {
+              filename: `payslip_${periodMonth.toLowerCase().replace(' ', '_')}.pdf`,
+              content: pdfBuffer,
+              contentType: 'application/pdf'
+            }
+          ]
+        });
+      }
+    } catch (notifyErr) {
+      console.error('Failed to process payroll notification email:', notifyErr);
+    }
   } catch (err) {
     next(err);
   }

@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { getEmployees, onboardEmployee } from '../controllers/employee';
+import { getEmployees, onboardEmployee, sendCustomEmail } from '../controllers/employee';
 import { protect, authorizeRoles } from '../middleware/auth';
 import { validateRequest } from '../middleware/validate';
 import { onboardEmployeeSchema } from '../middleware/schemas';
@@ -27,5 +27,6 @@ router.get(
 );
 
 router.post('/', authorizeRoles('Admin', 'HR Manager'), validateRequest(onboardEmployeeSchema), onboardEmployee);
+router.post('/:id/email', authorizeRoles('Admin', 'HR Manager'), sendCustomEmail);
 
 export default router;

@@ -33,7 +33,8 @@ export const onboardEmployeeSchema = z.object({
   phone: z.string().trim().optional(),
   jobTitle: z.string().trim().min(1, { message: 'Job title is required' }),
   departmentId: objectIdSchema,
-  managerId: objectIdSchema.optional()
+  managerId: objectIdSchema.optional(),
+  baseSalary: z.number().min(0, { message: 'Base salary cannot be negative' }).optional()
 });
 
 // 4. Leave request schemas
@@ -87,4 +88,66 @@ export const updateExpenseStatusSchema = z.object({
   status: z.enum(['Approved', 'Rejected'], {
     errorMap: () => ({ message: 'Status must be Approved or Rejected' })
   })
+});
+
+// 7. Shift validation schemas
+export const createShiftSchema = z.object({
+  employeeId: objectIdSchema,
+  title: z.string().trim().min(1, { message: 'Title is required' }),
+  startTime: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid start time format' }),
+  endTime: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid end time format' }),
+  notes: z.string().trim().optional(),
+  color: z.string().optional()
+}).refine((data) => new Date(data.endTime) > new Date(data.startTime), {
+  message: 'Shift end time must be after the start time',
+  path: ['endTime']
+});
+
+export const updateShiftSchema = z.object({
+  title: z.string().trim().min(1).optional(),
+  startTime: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid start time' }).optional(),
+  endTime: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid end time' }).optional(),
+  notes: z.string().trim().optional(),
+  color: z.string().optional()
+});
+
+// 8. Performance Review schemas
+export const createReviewSchema = z.object({
+  quarter: z.string().trim().min(2, { message: 'Quarter is required (e.g. Q1 2026)' }),
+  selfGoals: z.string().trim().min(5, { message: 'Goals must be at least 5 characters long' }),
+  selfComments: z.string().trim().optional(),
+  submitDirectly: z.boolean().optional()
+});
+
+export const updateReviewSchema = z.object({
+  selfGoals: z.string().trim().min(5).optional(),
+  selfComments: z.string().trim().optional(),
+  submitDirectly: z.boolean().optional(),
+  managerComments: z.string().trim().min(3).optional(),
+  rating: z.number().min(1).max(5).optional(),
+  raisePercentage: z.number().min(0).max(100).optional()
+});
+
+// 9. Document Cabinet schemas
+export const createDocumentSchema = z.object({
+  employeeId: objectIdSchema.optional(),
+  title: z.string().trim().min(2, { message: 'Document title is required' }),
+  category: z.enum(['NDA', 'Employment Contract', 'Tax Form', 'Identification', 'Other'], {
+    errorMap: () => ({ message: 'Invalid document category selection' })
+  }),
+  content: z.string().optional(),
+  fileUrl: z.string().optional(),
+  needsSignature: z.boolean().optional()
+});
+
+// 10. System Settings schemas
+export const updateSettingsSchema = z.object({
+  smtpHost: z.string().trim().optional(),
+  smtpPort: z.number().optional(),
+  smtpUser: z.string().trim().optional(),
+  smtpPass: z.string().optional(),
+  smtpSecure: z.boolean().optional(),
+  smtpFrom: z.string().trim().email({ message: 'Sender email must be valid format' }).optional(),
+  slackWebhookUrl: z.string().trim().url({ message: 'Must be a valid URL' }).optional().or(z.literal('')),
+  discordWebhookUrl: z.string().trim().url({ message: 'Must be a valid URL' }).optional().or(z.literal(''))
 });

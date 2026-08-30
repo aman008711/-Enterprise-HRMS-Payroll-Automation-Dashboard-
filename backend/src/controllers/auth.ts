@@ -47,6 +47,41 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       return next(new ErrorResponse('Please provide email and password', 400));
     }
 
+    // 1. Verify caller authorization by checking token in cookie or headers
+    let callerRole = '';
+    let token = req.cookies?.token;
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecretkey') as any;
+        callerRole = decoded.role;
+      } catch (err) {
+        // invalid token
+      }
+    }
+
+    // Only Admin and HR Manager are allowed to create accounts.
+    // Standard Employees and unauthenticated guests are completely blocked.
+    if (callerRole !== 'Admin' && callerRole !== 'HR Manager') {
+      return next(
+        new ErrorResponse(
+          'Unauthorized: Public registration is disabled. Administrative privileges are required to create accounts.',
+          403
+        )
+      );
+    }
+
+    // Only Admins can create other Admin or HR Manager accounts.
+    // HR Managers can only create Employee accounts.
+    if ((role === 'Admin' || role === 'HR Manager') && callerRole !== 'Admin') {
+      return next(
+        new ErrorResponse('Unauthorized: Only Admins can register administrative roles.', 403)
+      );
+    }
+
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -60,13 +95,22 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       role: role || 'Employee'
     });
 
-    sendTokenResponse(user, 201, res);
+    // Return success response without logging in the newly created user (prevents session hijacking/cookie overriding)
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
     
     // Log registration audit trail
     createAuditLog({
-      userId: user._id,
       action: 'USER_REGISTER',
-      details: `Role assigned: ${user.role}`,
+      targetModel: 'User',
+      targetId: user._id.toString(),
+      details: `Registered account: ${user.email} with role: ${user.role} (created by: ${callerRole})`,
       req
     });
   } catch (err) {

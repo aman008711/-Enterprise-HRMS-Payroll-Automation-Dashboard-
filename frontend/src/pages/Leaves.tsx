@@ -71,7 +71,7 @@ const Leaves: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leaves'] });
-      setSuccessMsg('Leave request submitted successfully!');
+      setSuccessMsg('Leave request submitted successfully! Manager notification email & chat webhook alert dispatched.');
       setType('Vacation');
       setStartDate('');
       setEndDate('');
