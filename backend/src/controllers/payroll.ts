@@ -1,6 +1,8 @@
 import { Response, NextFunction } from 'express';
 import Payroll from '../models/Payroll';
 import Employee from '../models/Employee';
+import Department from '../models/Department';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
@@ -22,6 +24,9 @@ const getLocalDateString = (d: Date = new Date()): string => {
 // @access  Private (Admin / HR Manager / Employee)
 export const getPayrollHistory = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
+    const _emp = Employee.modelName;
+    const _dept = Department.modelName;
+    const _usr = User.modelName;
     let matchQuery: any = {};
 
     // Restrict standard Employee users to viewing only their own slips
@@ -165,6 +170,9 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
   const { employeeId, payPeriodStart, payPeriodEnd, baseSalary, allowances, deductions, status, paymentMethod } = req.body;
 
   try {
+    const _emp = Employee.modelName;
+    const _dept = Department.modelName;
+    const _usr = User.modelName;
     if (!employeeId || !payPeriodStart || !payPeriodEnd || baseSalary === undefined) {
       return next(new ErrorResponse('Please provide employeeId, payPeriodStart, payPeriodEnd, and baseSalary', 400));
     }
@@ -353,6 +361,9 @@ export const createPayroll = async (req: AuthenticatedRequest, res: Response, ne
 // @access  Private (Admin / HR Manager / Employee owning the record)
 export const downloadPayslip = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
+    const _emp = Employee.modelName;
+    const _dept = Department.modelName;
+    const _usr = User.modelName;
     const payroll = await Payroll.findById(req.params.id)
       .populate('employee', 'firstName lastName employeeId jobTitle department')
       .populate({
