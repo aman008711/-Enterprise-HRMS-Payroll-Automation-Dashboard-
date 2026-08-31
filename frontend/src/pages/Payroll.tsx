@@ -163,10 +163,28 @@ const Payroll: React.FC = () => {
   };
 
   // Safe stream payslip trigger (downloads PDF in Commit 24)
-  const handleDownloadPDF = (payrollId: string) => {
-    const downloadUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/payroll/${payrollId}/download`;
-    // Open in a new tab to let the secure route stream the PDF file
-    window.open(downloadUrl, '_blank');
+  const handleDownloadPDF = async (payrollId: string) => {
+    try {
+      const response = await api.get(`/payroll/${payrollId}/download`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `payslip-${payrollId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error('Failed to download payslip:', err);
+      setErrorMsg('Failed to download secure payslip PDF.');
+      setTimeout(() => setErrorMsg(null), 4000);
+    }
   };
 
   return (
