@@ -17,6 +17,10 @@ import settingsRoutes from './routes/settings';
 import shiftRoutes from './routes/shift';
 import reviewRoutes from './routes/review';
 import documentRoutes from './routes/document';
+import auditRoutes from './routes/audit';
+import bulletinRoutes from './routes/bulletin';
+import resignationRoutes from './routes/resignation';
+import grievanceRoutes from './routes/grievance';
 
 const app = express();
 
@@ -77,6 +81,10 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/shifts', shiftRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/audit-logs', auditRoutes);
+app.use('/api/bulletins', bulletinRoutes);
+app.use('/api/resignations', resignationRoutes);
+app.use('/api/grievances', grievanceRoutes);
 
 // Basic health check route
 app.get('/health', (req: Request, res: Response) => {

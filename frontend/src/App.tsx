@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from './hooks/useAuth';
 import api from './utils/api';
 import { CostBarChart, StaffDonutChart } from './components/Charts';
 import DashboardLayout from './components/DashboardLayout';
-import { Users, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
+import { Users, Calendar, CreditCard, ShieldCheck, Megaphone } from 'lucide-react';
 
 // Route Lazy-Loading for code splitting
 const Login = lazy(() => import('./pages/Login'));
@@ -19,6 +19,10 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Schedule = lazy(() => import('./pages/Schedule'));
 const Reviews = lazy(() => import('./pages/Reviews'));
 const Documents = lazy(() => import('./pages/Documents'));
+const Bulletins = lazy(() => import('./pages/Bulletins'));
+const Grievances = lazy(() => import('./pages/Grievances'));
+const Offboarding = lazy(() => import('./pages/Offboarding'));
+const AuditLogs = lazy(() => import('./pages/AuditLogs'));
 
 // Initialize TanStack Query Client with global cache rules
 const queryClient = new QueryClient({
@@ -77,6 +81,15 @@ const OverviewPage: React.FC = () => {
     },
     enabled: isAdminOrHR
   });
+
+  // Fetch bulletins list for announcements section
+  const { data: bulletinsList } = useQuery({
+    queryKey: ['bulletins-overview'],
+    queryFn: async () => {
+      const res = await api.get('/bulletins');
+      return res.data?.data;
+    }
+  });
   
   return (
     <div className="space-y-6">
@@ -133,6 +146,35 @@ const OverviewPage: React.FC = () => {
           <StaffDonutChart data={reportList} />
         </div>
       )}
+
+      {/* Company Announcements / Bulletins section */}
+      <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/5 space-y-4">
+        <h2 className="text-md font-bold text-white uppercase tracking-wider flex items-center gap-2">
+          <Megaphone className="w-5 h-5 text-brand-400" /> Active Announcements & Bulletins
+        </h2>
+        {bulletinsList && bulletinsList.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {bulletinsList.slice(0, 4).map((bul: any) => (
+              <div key={bul._id} className="p-4 bg-white/2 border border-white/5 rounded-xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border ${
+                    bul.priority === 'High' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                    bul.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                    'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                  }`}>
+                    {bul.priority}
+                  </span>
+                  <span className="text-[10px] text-gray-500">{new Date(bul.createdAt).toLocaleDateString()}</span>
+                </div>
+                <h4 className="text-sm font-bold text-white">{bul.title}</h4>
+                <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{bul.content}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 italic">No active announcements published today.</p>
+        )}
+      </div>
     </div>
   );
 };
@@ -186,6 +228,17 @@ const AppRoutes: React.FC = () => {
             <Route path="schedule" element={<Schedule />} />
             <Route path="reviews" element={<Reviews />} />
             <Route path="documents" element={<Documents />} />
+            <Route path="bulletins" element={<Bulletins />} />
+            <Route path="grievances" element={<Grievances />} />
+            <Route path="offboarding" element={<Offboarding />} />
+            <Route 
+              path="audit-logs" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AuditLogs />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="settings" 
               element={

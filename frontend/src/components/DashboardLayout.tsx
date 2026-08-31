@@ -15,7 +15,9 @@ import {
   Clock,
   Settings,
   Award,
-  FolderLock
+  FolderLock,
+  Megaphone,
+  Inbox
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -82,6 +84,30 @@ const DashboardLayout: React.FC = () => {
       path: '/documents',
       icon: FolderLock,
       roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Bulletins & News',
+      path: '/bulletins',
+      icon: Megaphone,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Grievance Box',
+      path: '/grievances',
+      icon: Inbox,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Offboarding',
+      path: '/offboarding',
+      icon: LogOut,
+      roles: ['Admin', 'HR Manager', 'Employee']
+    },
+    {
+      name: 'Audit Trail',
+      path: '/audit-logs',
+      icon: ShieldAlert,
+      roles: ['Admin']
     },
     {
       name: 'System Settings',

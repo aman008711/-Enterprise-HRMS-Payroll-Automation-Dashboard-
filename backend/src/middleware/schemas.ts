@@ -151,3 +151,34 @@ export const updateSettingsSchema = z.object({
   slackWebhookUrl: z.string().trim().url({ message: 'Must be a valid URL' }).optional().or(z.literal('')),
   discordWebhookUrl: z.string().trim().url({ message: 'Must be a valid URL' }).optional().or(z.literal(''))
 });
+
+// 11. Bulletin board schemas
+export const createBulletinSchema = z.object({
+  title: z.string().trim().min(3, { message: 'Title must be at least 3 characters long' }),
+  content: z.string().trim().min(5, { message: 'Content must be at least 5 characters long' }),
+  priority: z.enum(['Low', 'Medium', 'High']).default('Medium'),
+  expiryDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid expiry date format' })
+});
+
+// 12. Resignation schemas
+export const createResignationSchema = z.object({
+  proposedLastWorkingDay: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid proposed last working day' }),
+  reason: z.string().trim().min(5, { message: 'Reason must be at least 5 characters long' })
+});
+
+export const updateResignationSchema = z.object({
+  status: z.enum(['Approved', 'Rejected']),
+  feedback: z.string().trim().optional()
+});
+
+// 13. Grievance schemas
+export const createGrievanceSchema = z.object({
+  isAnonymous: z.boolean().default(false),
+  title: z.string().trim().min(3, { message: 'Title must be at least 3 characters long' }),
+  description: z.string().trim().min(5, { message: 'Details must be at least 5 characters long' })
+});
+
+export const resolveGrievanceSchema = z.object({
+  response: z.string().trim().min(3, { message: 'Resolution message must be at least 3 characters long' })
+});
+
