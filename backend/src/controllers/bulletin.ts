@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import Bulletin from '../models/Bulletin';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
@@ -9,6 +10,7 @@ import { createAuditLog } from '../utils/audit';
 // @access  Private (All roles)
 export const getBulletins = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
+    const _userModel = User.modelName; // Prevent TS compiler from stripping import
     const now = new Date();
     // Fetch bulletins that have not expired yet
     const bulletins = await Bulletin.find({ expiryDate: { $gt: now } })

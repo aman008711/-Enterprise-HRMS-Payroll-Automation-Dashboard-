@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import Grievance from '../models/Grievance';
 import Employee from '../models/Employee';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
@@ -10,6 +11,7 @@ import { createAuditLog } from '../utils/audit';
 // @access  Private
 export const getGrievances = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
+    const _userModel = User.modelName; // Prevent TS compiler from stripping import
     const query: any = {};
 
     // Standard employees only see their own grievances

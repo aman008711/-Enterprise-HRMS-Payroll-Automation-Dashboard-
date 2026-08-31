@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import AuditLog from '../models/AuditLog';
+import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 
@@ -8,6 +9,9 @@ import { ErrorResponse } from '../middleware/error';
 // @access  Private (Admin only)
 export const getAuditLogs = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
+    // Explicitly reference to prevent TypeScript from stripping the import
+    const _userModel = User.modelName;
+
     // Restrict strictly to Admin
     if (req.user?.role !== 'Admin') {
       return next(new ErrorResponse('Not authorized to access operational audit logs', 403));
