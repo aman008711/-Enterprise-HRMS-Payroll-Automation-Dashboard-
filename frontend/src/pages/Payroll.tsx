@@ -247,7 +247,7 @@ const Payroll: React.FC = () => {
       {activeTab === 'ledger' && (
         <div className="glass-card rounded-2xl p-6 border border-white/5 shadow-xl">
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full min-w-[1000px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10 bg-white/2">
                   {isAdminOrHR && <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Employee</th>}
