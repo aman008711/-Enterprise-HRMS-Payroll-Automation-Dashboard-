@@ -295,8 +295,8 @@ const Payroll: React.FC = () => {
           <button
             onClick={() => setActiveTab('ledger')}
             className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${activeTab === 'ledger'
-                ? 'border-brand-500 text-white'
-                : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-brand-500 text-white'
+              : 'border-transparent text-gray-400 hover:text-white'
               }`}
           >
             {isAdminOrHR ? 'Payroll Registry' : 'My Pay History'}
@@ -306,8 +306,8 @@ const Payroll: React.FC = () => {
             <button
               onClick={() => setActiveTab('reports')}
               className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${activeTab === 'reports'
-                  ? 'border-brand-500 text-white'
-                  : 'border-transparent text-gray-400 hover:text-white'
+                ? 'border-brand-500 text-white'
+                : 'border-transparent text-gray-400 hover:text-white'
                 }`}
             >
               Cost Center Reports
@@ -328,9 +328,49 @@ const Payroll: React.FC = () => {
 
       {/* Tab content 1: Ledger History */}
       {activeTab === 'ledger' && (
-        <div className="glass-card rounded-2xl p-6 border border-white/5 shadow-xl">
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full min-w-[1000px] text-left border-collapse">
+        <div className="space-y-6 animate-fade-in">
+          {/* Executive Overview KPI Strip */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-brand-500/30 transition-all duration-300">
+              <div className="p-3 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-lg shadow-brand-500/20">
+                <DollarSign className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Disbursed Net</span>
+                <span className="text-xl font-black text-white font-heading">
+                  {formatCurrency(payrollList?.reduce((acc, p) => acc + p.netSalary, 0) || 0)}
+                </span>
+              </div>
+            </div>
+
+            <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-emerald-500/30 transition-all duration-300">
+              <div className="p-3 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/20">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Average Payout</span>
+                <span className="text-xl font-black text-white font-heading">
+                  {formatCurrency(payrollList?.length ? (payrollList.reduce((acc, p) => acc + p.netSalary, 0) / payrollList.length) : 0)}
+                </span>
+              </div>
+            </div>
+
+            <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-purple-500/30 transition-all duration-300">
+              <div className="p-3 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Processed Slips</span>
+                <span className="text-xl font-black text-white font-heading">
+                  {payrollList?.length || 0} Records Certified
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6 border border-white/5 shadow-xl">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full min-w-[1000px] text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10 bg-white/2">
                   {isAdminOrHR && <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Employee</th>}
@@ -384,8 +424,8 @@ const Payroll: React.FC = () => {
                       <td className="px-6 py-4 text-xs text-gray-400 font-semibold">{p.paymentMethod}</td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${p.status === 'Paid'
-                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                          : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
                           }`}>
                           {p.status}
                         </span>
@@ -421,7 +461,8 @@ const Payroll: React.FC = () => {
             </table>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Tab content 2: Aggregates Cost Center report (Admin/HR only) */}
       {activeTab === 'reports' && isAdminOrHR && (
@@ -733,7 +774,7 @@ const Payroll: React.FC = () => {
       {previewBlobUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 animate-fade-in">
           <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={closePreview} />
-          
+
           <div className="relative glass-card max-w-5xl w-full h-[90vh] rounded-2xl border border-white/10 shadow-2xl z-10 flex flex-col overflow-hidden bg-slate-950">
             {/* Modal Top Bar */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-900/90 backdrop-blur">
