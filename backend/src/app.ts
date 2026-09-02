@@ -35,16 +35,21 @@ app.use(mongoSanitize());
 
 // 4. Cross-Origin Resource Sharing (CORS) Configuration
 const allowedOrigins = process.env.CLIENT_ORIGIN 
-  ? process.env.CLIENT_ORIGIN.split(',') 
-  : ['http://localhost:5173'];
+  ? process.env.CLIENT_ORIGIN.split(',').map((s) => s.trim()) 
+  : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, postman, or internal server-to-server requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow requests with no origin or matching local development ports (e.g., localhost:5173, 5174, 3000, 127.0.0.1:*)
+    if (
+      !origin || 
+      allowedOrigins.includes(origin) ||
+      /^http:\/\/localhost:\d+$/.test(origin) ||
+      /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)
+    ) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
