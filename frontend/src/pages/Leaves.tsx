@@ -40,7 +40,8 @@ interface LeaveRequestType {
 const Leaves: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<'history' | 'apply' | 'queue'>('history');
+  const isAdminOrHR = user?.role === 'Admin' || user?.role === 'HR Manager';
+  const [activeTab, setActiveTab] = useState<'history' | 'apply' | 'queue'>(isAdminOrHR ? 'queue' : 'history');
 
   // Leave Form States
   const [type, setType] = useState<'Sick' | 'Vacation' | 'Personal' | 'Maternity' | 'Paternity'>('Vacation');
@@ -51,8 +52,6 @@ const Leaves: React.FC = () => {
   // Local Alerts state
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const isAdminOrHR = user?.role === 'Admin' || user?.role === 'HR Manager';
 
   // Fetch leaves list from backend
   const { data: leaves, isLoading } = useQuery({
@@ -184,28 +183,6 @@ const Leaves: React.FC = () => {
 
       {/* Navigation Tabs Header */}
       <div className="flex border-b border-white/10 gap-2 select-none">
-        <button
-          onClick={() => setActiveTab('history')}
-          className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
-            activeTab === 'history' 
-              ? 'border-brand-500 text-white' 
-              : 'border-transparent text-gray-400 hover:text-white'
-          }`}
-        >
-          {isAdminOrHR ? 'All Records' : 'My Leave History'}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('apply')}
-          className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
-            activeTab === 'apply' 
-              ? 'border-brand-500 text-white' 
-              : 'border-transparent text-gray-400 hover:text-white'
-          }`}
-        >
-          Apply for Leave
-        </button>
-
         {isAdminOrHR && (
           <button
             onClick={() => setActiveTab('queue')}
@@ -221,6 +198,30 @@ const Leaves: React.FC = () => {
                 {pendingLeaves.length}
               </span>
             )}
+          </button>
+        )}
+
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
+            activeTab === 'history' 
+              ? 'border-brand-500 text-white' 
+              : 'border-transparent text-gray-400 hover:text-white'
+          }`}
+        >
+          {isAdminOrHR ? 'All Leave Records' : 'My Leave History'}
+        </button>
+
+        {!isAdminOrHR && (
+          <button
+            onClick={() => setActiveTab('apply')}
+            className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
+              activeTab === 'apply' 
+                ? 'border-brand-500 text-white' 
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            Apply for Leave
           </button>
         )}
       </div>

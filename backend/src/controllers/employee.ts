@@ -219,3 +219,28 @@ export const sendCustomEmail = async (req: Request, res: Response, next: NextFun
     next(err);
   }
 };
+
+// @desc    Get active logged-in user's own employee profile details
+// @route   GET /api/employees/me
+// @access  Private (Any authenticated user)
+export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authReq = req as any;
+    const employee = await Employee.findOne({ user: authReq.user?._id })
+      .populate('user', 'email role')
+      .populate('department', 'name code')
+      .populate('manager', 'firstName lastName employeeId jobTitle')
+      .lean();
+
+    if (!employee) {
+      return next(new ErrorResponse('Employee profile not found for this account', 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: employee
+    });
+  } catch (err) {
+    next(err);
+  }
+};
