@@ -97,6 +97,36 @@ const seedDB = async () => {
     hr.manager = hrEmployee._id as any;
     await hr.save();
 
+    // 8. Seed sample Payroll records
+    console.log('Seeding sample Payroll records...');
+    await Payroll.create([
+      {
+        employee: adminEmployee._id,
+        payPeriodStart: new Date('2026-08-01'),
+        payPeriodEnd: new Date('2026-08-31'),
+        baseSalary: 12000,
+        allowances: 1500,
+        deductions: 800,
+        netSalary: 12700,
+        status: 'Paid',
+        paymentMethod: 'Bank Transfer',
+        paymentDate: new Date('2026-08-31')
+      },
+      {
+        employee: hrEmployee._id,
+        payPeriodStart: new Date('2026-08-01'),
+        payPeriodEnd: new Date('2026-08-31'),
+        baseSalary: 8500,
+        allowances: 600,
+        deductions: 450,
+        netSalary: 8650,
+        status: 'Paid',
+        paymentMethod: 'Bank Transfer',
+        paymentDate: new Date('2026-08-31')
+      }
+    ]);
+    console.log('Payroll records seeded.');
+
     console.log('--------------------------------------------------');
     console.log('Database Seeding Completed Successfully!');
     console.log('You can now log in using either:');
