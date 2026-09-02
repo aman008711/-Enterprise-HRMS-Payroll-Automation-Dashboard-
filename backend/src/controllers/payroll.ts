@@ -6,7 +6,7 @@ import User from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
-import { generatePayslipPDF, generatePayslipPDFBuffer } from '../utils/pdf';
+import { generatePayslipPDF, generatePayslipPDFBuffer, generatePayrollReportPDF } from '../utils/pdf';
 import { sendEmail } from '../utils/notifications';
 import Expense from '../models/Expense';
 import Attendance from '../models/Attendance';
@@ -157,6 +157,75 @@ export const getPayrollReport = async (req: AuthenticatedRequest, res: Response,
       success: true,
       count: report.length,
       data: report
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Download executive company-wide financial report as PDF
+// @route   GET /api/payroll/report/download
+// @access  Private (Admin / HR Manager only)
+export const downloadPayrollReport = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const _emp = Employee.modelName;
+    const _dept = Department.modelName;
+
+    const report = await Payroll.aggregate([
+      {
+        $lookup: {
+          from: 'employees',
+          localField: 'employee',
+          foreignField: '_id',
+          as: 'employee'
+        }
+      },
+      { $unwind: '$employee' },
+      {
+        $group: {
+          _id: '$employee.department',
+          totalBaseSalary: { $sum: '$baseSalary' },
+          totalAllowances: { $sum: '$allowances' },
+          totalDeductions: { $sum: '$deductions' },
+          totalNetSalary: { $sum: '$netSalary' },
+          averageNetSalary: { $avg: '$netSalary' },
+          payrollCount: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: 'departments',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'department'
+        }
+      },
+      { $unwind: '$department' },
+      {
+        $project: {
+          _id: 1,
+          departmentName: '$department.name',
+          departmentCode: '$department.code',
+          totalBaseSalary: 1,
+          totalAllowances: 1,
+          totalDeductions: 1,
+          totalNetSalary: 1,
+          averageNetSalary: { $round: ['$averageNetSalary', 2] },
+          payrollCount: 1
+        }
+      }
+    ]);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=master-payroll-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+
+    await generatePayrollReportPDF(report, res);
+
+    createAuditLog({
+      action: 'PAYROLL_REPORT_DOWNLOADED',
+      targetModel: 'Payroll',
+      details: `Executive financial report downloaded by ${req.user?.email}`,
+      req
     });
   } catch (err) {
     next(err);

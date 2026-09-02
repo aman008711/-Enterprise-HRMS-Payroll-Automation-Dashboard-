@@ -3,15 +3,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import { CostBarChart, StaffDonutChart, type ReportItem } from '../components/Charts';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  PlusCircle, 
-  FileDown, 
+import {
+  DollarSign,
+  TrendingUp,
+  PlusCircle,
+  FileDown,
   AlertCircle,
   CheckCircle,
   Loader,
-  Users
+  Users,
+  Eye,
+  Printer,
+  X,
+  FileText
 } from 'lucide-react';
 
 interface PayrollType {
@@ -62,6 +66,12 @@ const Payroll: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // PDF Preview & Master Export States
+  const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>('');
+  const [loadingPdfId, setLoadingPdfId] = useState<string | null>(null);
+  const [downloadingReport, setDownloadingReport] = useState(false);
+
   const isAdminOrHR = user?.role === 'Admin' || user?.role === 'HR Manager';
 
   // 1. Fetch Payroll History list
@@ -73,7 +83,17 @@ const Payroll: React.FC = () => {
     }
   });
 
-  // 2. Fetch Cost Center aggregate reports (Admin/HR only)
+  // 2. Fetch Employee list for creating payrolls (Admin/HR only)
+  const { data: employees } = useQuery({
+    queryKey: ['active-employees'],
+    queryFn: async () => {
+      const res = await api.get('/employees');
+      return res.data?.data as EmployeeSelect[];
+    },
+    enabled: isAdminOrHR
+  });
+
+  // 3. Fetch Aggregate Cost Center report (Admin/HR only)
   const { data: reportList, isLoading: reportLoading } = useQuery({
     queryKey: ['payroll-report'],
     queryFn: async () => {
@@ -83,20 +103,10 @@ const Payroll: React.FC = () => {
     enabled: isAdminOrHR
   });
 
-  // 3. Fetch Employees to populate dropdown select list (Admin/HR only)
-  const { data: employees } = useQuery({
-    queryKey: ['onboarded-employees'],
-    queryFn: async () => {
-      const res = await api.get('/employees');
-      return res.data?.data as EmployeeSelect[];
-    },
-    enabled: isAdminOrHR
-  });
-
-  // 4. Generate Payroll Slip Mutation
+  // Mutation for manual payroll creation
   const createPayrollMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      const res = await api.post('/payroll', payload);
+    mutationFn: async (payrollData: any) => {
+      const res = await api.post('/payroll', payrollData);
       return res.data;
     },
     onSuccess: () => {
@@ -104,7 +114,7 @@ const Payroll: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['payroll-report'] });
       setSuccessMsg('Payroll ledger entry processed successfully!');
       setModalOpen(false);
-      
+
       // Reset form fields
       setEmployeeId('');
       setPayPeriodStart('');
@@ -114,7 +124,7 @@ const Payroll: React.FC = () => {
       setDeductions(0);
       setStatus('Paid');
       setPaymentMethod('Bank Transfer');
-      
+
       setTimeout(() => setSuccessMsg(null), 4000);
     },
     onError: (err: any) => {
@@ -130,6 +140,13 @@ const Payroll: React.FC = () => {
       setTimeout(() => setErrorMsg(null), 4000);
       return;
     }
+
+    if (!employeeId) {
+      setErrorMsg('Please select an employee profile');
+      setTimeout(() => setErrorMsg(null), 4000);
+      return;
+    }
+
     createPayrollMutation.mutate({
       employeeId,
       payPeriodStart,
@@ -142,8 +159,13 @@ const Payroll: React.FC = () => {
     });
   };
 
-  // Real-time calculator: net pay calculated in the UI on-the-fly
-  const calculatedNetSalary = Number(baseSalary) + Number(allowances) - Number(deductions);
+  const handleSelectEmployee = (empId: string) => {
+    setEmployeeId(empId);
+    const selected = employees?.find(e => e._id === empId);
+    if (selected && selected.baseSalary) {
+      setBaseSalary(selected.baseSalary);
+    }
+  };
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -160,30 +182,95 @@ const Payroll: React.FC = () => {
     });
   };
 
-  // Safe stream payslip trigger (downloads PDF in Commit 24)
+  // Safe stream payslip download
   const handleDownloadPDF = async (payrollId: string) => {
     try {
+      setLoadingPdfId(payrollId);
       const response = await api.get(`/payroll/${payrollId}/download`, {
         responseType: 'blob'
       });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const downloadUrl = window.URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.setAttribute('download', `payslip-${payrollId}.pdf`);
       document.body.appendChild(link);
       link.click();
-      
+
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
+      setSuccessMsg('Payslip PDF downloaded successfully.');
+      setTimeout(() => setSuccessMsg(null), 3000);
     } catch (err) {
       console.error('Failed to download payslip:', err);
       setErrorMsg('Failed to download secure payslip PDF.');
       setTimeout(() => setErrorMsg(null), 4000);
+    } finally {
+      setLoadingPdfId(null);
     }
   };
+
+  // Open interactive in-browser preview modal
+  const handlePreviewPDF = async (payroll: PayrollType) => {
+    try {
+      setLoadingPdfId(payroll._id);
+      const response = await api.get(`/payroll/${payroll._id}/download`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const previewUrl = window.URL.createObjectURL(blob);
+      setPreviewBlobUrl(previewUrl);
+      setPreviewTitle(`Payslip - ${payroll.employee?.firstName || ''} ${payroll.employee?.lastName || ''} (${formatDate(payroll.payPeriodStart)})`);
+    } catch (err) {
+      console.error('Failed to load payslip preview:', err);
+      setErrorMsg('Failed to generate interactive preview.');
+      setTimeout(() => setErrorMsg(null), 4000);
+    } finally {
+      setLoadingPdfId(null);
+    }
+  };
+
+  // Download Master Company-Wide Departmental Financial Report PDF
+  const handleDownloadMasterReport = async () => {
+    try {
+      setDownloadingReport(true);
+      const response = await api.get('/payroll/report/download', {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `master-payroll-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      setSuccessMsg('Executive Financial Report PDF exported successfully.');
+      setTimeout(() => setSuccessMsg(null), 4000);
+    } catch (err) {
+      console.error('Failed to export master financial report:', err);
+      setErrorMsg('Failed to export executive financial report PDF.');
+      setTimeout(() => setErrorMsg(null), 4000);
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewBlobUrl) {
+      window.URL.revokeObjectURL(previewBlobUrl);
+    }
+    setPreviewBlobUrl(null);
+  };
+
+  const calculatedNetSalary = Math.max(0, Number(baseSalary) + Number(allowances) - Number(deductions));
 
   return (
     <div className="space-y-6">
@@ -207,11 +294,10 @@ const Payroll: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveTab('ledger')}
-            className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
-              activeTab === 'ledger' 
-                ? 'border-brand-500 text-white' 
+            className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${activeTab === 'ledger'
+                ? 'border-brand-500 text-white'
                 : 'border-transparent text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             {isAdminOrHR ? 'Payroll Registry' : 'My Pay History'}
           </button>
@@ -219,11 +305,10 @@ const Payroll: React.FC = () => {
           {isAdminOrHR && (
             <button
               onClick={() => setActiveTab('reports')}
-              className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${
-                activeTab === 'reports' 
-                  ? 'border-brand-500 text-white' 
+              className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer ${activeTab === 'reports'
+                  ? 'border-brand-500 text-white'
                   : 'border-transparent text-gray-400 hover:text-white'
-              }`}
+                }`}
             >
               Cost Center Reports
             </button>
@@ -256,7 +341,7 @@ const Payroll: React.FC = () => {
                   <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Net Salary</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Method</th>
                   <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Payslip</th>
+                  <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -271,7 +356,7 @@ const Payroll: React.FC = () => {
                       <td className="px-6 py-4"><div className="h-4 bg-white/5 rounded w-16" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-white/5 rounded w-20" /></td>
                       <td className="px-6 py-4"><div className="h-6 bg-white/5 rounded w-16" /></td>
-                      <td className="px-6 py-4"><div className="h-4 bg-white/5 rounded w-10" /></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-white/5 rounded w-14 ml-auto" /></td>
                     </tr>
                   ))
                 ) : !payrollList || payrollList.length === 0 ? (
@@ -298,22 +383,36 @@ const Payroll: React.FC = () => {
                       <td className="px-6 py-4 text-sm text-white font-extrabold">{formatCurrency(p.netSalary)}</td>
                       <td className="px-6 py-4 text-xs text-gray-400 font-semibold">{p.paymentMethod}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
-                          p.status === 'Paid' 
-                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${p.status === 'Paid'
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                             : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                        }`}>
+                          }`}>
                           {p.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => handleDownloadPDF(p._id)}
-                          className="p-2 rounded-lg bg-white/5 hover:bg-brand-500/20 text-gray-400 hover:text-brand-400 border border-white/5 hover:border-brand-500/30 transition cursor-pointer"
-                          title="Download Payslip PDF"
-                        >
-                          <FileDown className="w-4 h-4" />
-                        </button>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handlePreviewPDF(p)}
+                            disabled={loadingPdfId === p._id}
+                            className="p-2 rounded-lg bg-white/5 hover:bg-brand-500/20 text-gray-400 hover:text-brand-300 border border-white/5 hover:border-brand-500/30 transition cursor-pointer"
+                            title="Preview Payslip in Viewer"
+                          >
+                            {loadingPdfId === p._id ? (
+                              <Loader className="w-4 h-4 animate-spin text-brand-400" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDownloadPDF(p._id)}
+                            disabled={loadingPdfId === p._id}
+                            className="p-2 rounded-lg bg-white/5 hover:bg-emerald-500/20 text-gray-400 hover:text-emerald-400 border border-white/5 hover:border-emerald-500/30 transition cursor-pointer"
+                            title="Download PDF Payslip"
+                          >
+                            <FileDown className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -327,6 +426,34 @@ const Payroll: React.FC = () => {
       {/* Tab content 2: Aggregates Cost Center report (Admin/HR only) */}
       {activeTab === 'reports' && isAdminOrHR && (
         <div className="space-y-6 animate-fade-in">
+          {/* Master Report Export Header Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/2 border border-white/5 p-4 rounded-2xl">
+            <div>
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <FileText className="w-4 h-4 text-brand-400" />
+                Executive Financial Cost Center Reports
+              </h4>
+              <p className="text-xs text-gray-400">Departmental breakdown, expenditure averages, and gross payroll analytics.</p>
+            </div>
+            <button
+              onClick={handleDownloadMasterReport}
+              disabled={downloadingReport}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs transition duration-200 cursor-pointer shadow-lg hover:shadow-indigo-500/25 shrink-0 select-none"
+            >
+              {downloadingReport ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  Generating Master PDF...
+                </>
+              ) : (
+                <>
+                  <FileDown className="w-4 h-4" />
+                  Export Master Financial Report (PDF)
+                </>
+              )}
+            </button>
+          </div>
+
           {/* General Summary aggregates cards grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass-card p-6 rounded-2xl flex items-center gap-4 border border-white/5">
@@ -349,8 +476,8 @@ const Payroll: React.FC = () => {
                 <span className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Average Net Pay</span>
                 <span className="text-xl font-black text-white">
                   {formatCurrency(
-                    reportList?.length 
-                      ? (reportList.reduce((acc, curr) => acc + curr.averageNetSalary, 0) / reportList.length) 
+                    reportList?.length
+                      ? (reportList.reduce((acc, curr) => acc + curr.averageNetSalary, 0) / reportList.length)
                       : 0
                   )}
                 </span>
@@ -439,7 +566,7 @@ const Payroll: React.FC = () => {
       {modalOpen && isAdminOrHR && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setModalOpen(false)} />
-          
+
           <div className="relative glass-card max-w-lg w-full rounded-2xl p-6 md:p-8 border border-white/10 shadow-2xl z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <h3 className="text-lg font-bold text-white mb-2">Process Employee Payroll</h3>
             <p className="text-gray-400 text-xs mb-6 font-medium">Define pay structures, allowance additions, and tax deductions.</p>
@@ -452,16 +579,7 @@ const Payroll: React.FC = () => {
                 <select
                   required
                   value={employeeId}
-                  onChange={(e) => {
-                    const empId = e.target.value;
-                    setEmployeeId(empId);
-                    const selected = employees?.find(emp => emp._id === empId);
-                    if (selected) {
-                      setBaseSalary(selected.baseSalary || 0);
-                    } else {
-                      setBaseSalary(0);
-                    }
-                  }}
+                  onChange={(e) => handleSelectEmployee(e.target.value)}
                   className="w-full glass-input px-4 py-3 text-sm cursor-pointer"
                 >
                   <option value="">Select Employee...</option>
@@ -607,6 +725,71 @@ const Payroll: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive PDF Preview Modal */}
+      {previewBlobUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 animate-fade-in">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={closePreview} />
+          
+          <div className="relative glass-card max-w-5xl w-full h-[90vh] rounded-2xl border border-white/10 shadow-2xl z-10 flex flex-col overflow-hidden bg-slate-950">
+            {/* Modal Top Bar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-900/90 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white truncate max-w-md">{previewTitle}</h3>
+                  <p className="text-[11px] text-gray-400">Official Authenticated Cryptographic Payslip</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const iframe = document.getElementById('pdf-preview-frame') as HTMLIFrameElement;
+                    if (iframe && iframe.contentWindow) {
+                      iframe.contentWindow.print();
+                    }
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-xs font-semibold border border-white/10 transition cursor-pointer select-none"
+                  title="Print Document"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  Print
+                </button>
+
+                <a
+                  href={previewBlobUrl}
+                  download="official-payslip.pdf"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md transition cursor-pointer select-none"
+                  title="Save PDF"
+                >
+                  <FileDown className="w-3.5 h-3.5" />
+                  Download
+                </a>
+
+                <button
+                  onClick={closePreview}
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 border border-white/10 transition cursor-pointer ml-2 select-none"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Document Viewer Frame */}
+            <div className="flex-1 w-full bg-slate-900 relative">
+              <iframe
+                id="pdf-preview-frame"
+                src={previewBlobUrl}
+                title="Payslip Preview"
+                className="w-full h-full border-none"
+              />
+            </div>
           </div>
         </div>
       )}
