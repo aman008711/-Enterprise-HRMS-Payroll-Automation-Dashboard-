@@ -34,8 +34,6 @@ interface PayrollType {
   processedAt?: string;
 }
 
-
-
 interface EmployeeSelect {
   _id: string;
   firstName: string;

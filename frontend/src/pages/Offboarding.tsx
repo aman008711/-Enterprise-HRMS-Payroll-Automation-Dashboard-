@@ -82,7 +82,8 @@ const Offboarding: React.FC = () => {
     queryKey: ['active-employees-list'],
     queryFn: async () => {
       const res = await api.get('/employees');
-      return (res.data?.data as EmployeeSelect[]).filter(emp => emp.status !== 'Terminated');
+      const list = (res.data?.data || []) as EmployeeSelect[];
+      return list.filter(emp => emp.status !== 'Terminated');
     },
     enabled: isAdminOrHR
   });

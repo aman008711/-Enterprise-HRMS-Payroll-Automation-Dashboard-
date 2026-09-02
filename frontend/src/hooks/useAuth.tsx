@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../utils/api';
 
@@ -19,22 +19,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    // Read persisted user profile on boot
+  const [user, setUser] = useState<User | null>(() => {
     const cachedUser = localStorage.getItem('user');
     if (cachedUser) {
       try {
-        setUser(JSON.parse(cachedUser));
-      } catch (err) {
+        return JSON.parse(cachedUser);
+      } catch {
         localStorage.removeItem('user');
       }
     }
-    setLoading(false);
-  }, []);
+    return null;
+  });
+  const [loading] = useState(false);
+  const queryClient = useQueryClient();
 
   // TanStack Query Mutation for logins
   const loginMutation = useMutation({

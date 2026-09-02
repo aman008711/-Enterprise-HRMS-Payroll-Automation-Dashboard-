@@ -182,7 +182,22 @@ export const StaffDonutChart: React.FC<ChartProps> = ({ data }) => {
   const circumference = 2 * Math.PI * radius;
 
   const totalRuns = data.reduce((acc, curr) => acc + curr.payrollCount, 0);
-  let accumulatedPercentage = 0;
+  
+  // Precompute segment slices immutably using reduce
+  const segments = data.reduce<{
+    elements: { item: ReportItem; color: string; strokeLength: number; strokeOffset: number }[];
+    offset: number;
+  }>((acc, item, idx) => {
+    const colors = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6'];
+    const color = colors[idx % colors.length];
+    const segmentPercentage = totalRuns > 0 ? item.payrollCount / totalRuns : 0;
+    const strokeLength = segmentPercentage * circumference;
+    const strokeOffset = circumference - (acc.offset * circumference);
+    return {
+      elements: [...acc.elements, { item, color, strokeLength, strokeOffset }],
+      offset: acc.offset + segmentPercentage
+    };
+  }, { elements: [], offset: 0 }).elements;
 
   return (
     <div className="glass-card p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col sm:flex-row items-center justify-around gap-6 relative overflow-hidden h-full">
@@ -219,32 +234,21 @@ export const StaffDonutChart: React.FC<ChartProps> = ({ data }) => {
             stroke="rgba(255, 255, 255, 0.03)"
             strokeWidth={strokeWidth}
           />
-          {data.map((item, idx) => {
-            const colors = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6'];
-            const color = colors[idx % colors.length];
-            
-            const segmentPercentage = totalRuns > 0 ? item.payrollCount / totalRuns : 0;
-            const strokeLength = segmentPercentage * circumference;
-            const strokeOffset = circumference - (accumulatedPercentage * circumference);
-            
-            accumulatedPercentage += segmentPercentage;
-
-            return (
-              <circle
-                key={item._id}
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                fill="transparent"
-                stroke={color}
-                strokeWidth={strokeWidth}
-                strokeDasharray={`${strokeLength} ${circumference}`}
-                strokeDashoffset={strokeOffset}
-                strokeLinecap="round"
-                className="transition-all duration-300 hover:scale-105 origin-center cursor-pointer opacity-90 hover:opacity-100"
-              />
-            );
-          })}
+          {segments.map(({ item, color, strokeLength, strokeOffset }) => (
+            <circle
+              key={item._id}
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="transparent"
+              stroke={color}
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${strokeLength} ${circumference}`}
+              strokeDashoffset={strokeOffset}
+              strokeLinecap="round"
+              className="transition-all duration-300 hover:scale-105 origin-center cursor-pointer opacity-90 hover:opacity-100"
+            />
+          ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-2xl font-black text-white">{totalRuns}</span>
