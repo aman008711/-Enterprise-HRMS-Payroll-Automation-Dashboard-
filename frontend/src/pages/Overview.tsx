@@ -21,7 +21,7 @@ import {
   CheckCircle,
   Clock3,
   FileDown,
-  PlusCircle,
+  Plus,
   Megaphone,
   Award,
   FolderLock,
@@ -40,7 +40,7 @@ const Overview: React.FC = () => {
   const queryClient = useQueryClient();
   const isAdminOrHR = user?.role === 'Admin' || user?.role === 'HR Manager';
 
-  // Local interactive states
+  // Interactive UI state
   const [timeRange, setTimeRange] = useState<'month' | 'quarter' | 'year'>('month');
   const [approvalsTab, setApprovalsTab] = useState<'leaves' | 'expenses'>('leaves');
   const [showBulletinModal, setShowBulletinModal] = useState(false);
@@ -58,15 +58,14 @@ const Overview: React.FC = () => {
   const [leaveEnd, setLeaveEnd] = useState('');
   const [leaveReason, setLeaveReason] = useState('');
 
-  // Notification Toast
+  // Toast State
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
+    setTimeout(() => setToast(null), 3500);
   };
 
-  // Live ticking clock for employee attendance
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -75,8 +74,6 @@ const Overview: React.FC = () => {
   /* ==========================================================================
      QUERIES
      ========================================================================== */
-
-  // 1. Employee Profile query for personal greeting
   const { data: myProfile } = useQuery({
     queryKey: ['my-profile'],
     queryFn: async () => {
@@ -86,7 +83,6 @@ const Overview: React.FC = () => {
     enabled: !isAdminOrHR
   });
 
-  // 2. Admin: Fetch Employee Roster count
   const { data: employees } = useQuery({
     queryKey: ['employees-overview'],
     queryFn: async () => {
@@ -96,7 +92,6 @@ const Overview: React.FC = () => {
     enabled: isAdminOrHR
   });
 
-  // 3. Admin & Employee: Fetch Leaves
   const { data: leaves } = useQuery({
     queryKey: ['leaves-overview'],
     queryFn: async () => {
@@ -105,7 +100,6 @@ const Overview: React.FC = () => {
     }
   });
 
-  // 4. Admin & Employee: Fetch Expenses
   const { data: expenses } = useQuery({
     queryKey: ['expenses-overview'],
     queryFn: async () => {
@@ -114,7 +108,6 @@ const Overview: React.FC = () => {
     }
   });
 
-  // 5. Admin: Fetch Company-wide Attendance logs
   const { data: attendanceAll } = useQuery({
     queryKey: ['attendance-all-overview'],
     queryFn: async () => {
@@ -124,7 +117,6 @@ const Overview: React.FC = () => {
     enabled: isAdminOrHR
   });
 
-  // 6. Employee: Fetch personal attendance history & today's status
   const { data: myAttendance } = useQuery({
     queryKey: ['my-attendance-overview'],
     queryFn: async () => {
@@ -143,7 +135,6 @@ const Overview: React.FC = () => {
     enabled: !isAdminOrHR
   });
 
-  // 7. Admin & Employee: Fetch Payroll data
   const { data: payrollList } = useQuery({
     queryKey: ['payroll-overview'],
     queryFn: async () => {
@@ -152,7 +143,6 @@ const Overview: React.FC = () => {
     }
   });
 
-  // 8. Admin: Fetch Payroll Cost Center Reports
   const { data: reportList } = useQuery({
     queryKey: ['payroll-report-overview'],
     queryFn: async () => {
@@ -162,7 +152,6 @@ const Overview: React.FC = () => {
     enabled: isAdminOrHR
   });
 
-  // 9. Fetch Bulletins / Announcements
   const { data: bulletinsList } = useQuery({
     queryKey: ['bulletins-overview'],
     queryFn: async () => {
@@ -174,8 +163,6 @@ const Overview: React.FC = () => {
   /* ==========================================================================
      MUTATIONS
      ========================================================================== */
-
-  // Quick Approve/Reject Leave (Admin/HR)
   const updateLeaveMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: 'Approved' | 'Rejected' }) => {
       const res = await api.put(`/leaves/${id}/status`, { status });
@@ -183,14 +170,13 @@ const Overview: React.FC = () => {
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['leaves-overview'] });
-      showToast(`Leave request ${vars.status.toLowerCase()} successfully!`);
+      showToast(`Leave request ${vars.status.toLowerCase()} successfully.`);
     },
     onError: (err: any) => {
       showToast(err.response?.data?.error || 'Failed to update leave status', 'error');
     }
   });
 
-  // Quick Approve/Reject Expense (Admin/HR)
   const updateExpenseMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: 'Approved' | 'Rejected' }) => {
       const res = await api.put(`/expenses/${id}/status`, { status });
@@ -198,14 +184,13 @@ const Overview: React.FC = () => {
     },
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['expenses-overview'] });
-      showToast(`Expense claim ${vars.status.toLowerCase()} successfully!`);
+      showToast(`Expense claim ${vars.status.toLowerCase()} successfully.`);
     },
     onError: (err: any) => {
       showToast(err.response?.data?.error || 'Failed to update expense status', 'error');
     }
   });
 
-  // Broadcast Bulletin Mutation (Admin/HR)
   const broadcastBulletinMutation = useMutation({
     mutationFn: async (payload: any) => {
       const res = await api.post('/bulletins', payload);
@@ -216,14 +201,13 @@ const Overview: React.FC = () => {
       setShowBulletinModal(false);
       setBulletinTitle('');
       setBulletinContent('');
-      showToast('Announcement broadcasted to all employees!');
+      showToast('Announcement published successfully.');
     },
     onError: (err: any) => {
-      showToast(err.response?.data?.error || 'Failed to post announcement', 'error');
+      showToast(err.response?.data?.error || 'Failed to publish announcement', 'error');
     }
   });
 
-  // Quick Apply Leave Mutation (Employee)
   const applyLeaveMutation = useMutation({
     mutationFn: async (payload: any) => {
       const res = await api.post('/leaves', payload);
@@ -235,14 +219,13 @@ const Overview: React.FC = () => {
       setLeaveStart('');
       setLeaveEnd('');
       setLeaveReason('');
-      showToast('Leave request submitted to reporting manager!');
+      showToast('Leave request submitted to supervisor.');
     },
     onError: (err: any) => {
       showToast(err.response?.data?.error || 'Failed to submit leave request', 'error');
     }
   });
 
-  // Clock In / Clock Out Mutations (Employee)
   const clockInMutation = useMutation({
     mutationFn: async () => {
       const res = await api.post('/attendance/clock-in', {
@@ -254,7 +237,7 @@ const Overview: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance-today-overview'] });
       queryClient.invalidateQueries({ queryKey: ['my-attendance-overview'] });
-      showToast('Checked in successfully! Geofence verified.');
+      showToast('Clocked in successfully. Geofence verified.');
     },
     onError: (err: any) => {
       showToast(err.response?.data?.error || 'Clock-in failed', 'error');
@@ -272,7 +255,7 @@ const Overview: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance-today-overview'] });
       queryClient.invalidateQueries({ queryKey: ['my-attendance-overview'] });
-      showToast('Checked out successfully! Have a great evening.');
+      showToast('Clocked out successfully.');
     },
     onError: (err: any) => {
       showToast(err.response?.data?.error || 'Clock-out failed', 'error');
@@ -302,57 +285,56 @@ const Overview: React.FC = () => {
     const totalMonthlyPayroll = baseMonthlyPayroll * multiplier;
 
     return (
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-6">
         {/* Toast Alert */}
         {toast && (
-          <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold border shadow-2xl transition-all duration-300 animate-slide-in ${
-            toast.type === 'success' ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/30' : 'bg-rose-950/90 text-rose-300 border-rose-500/30'
+          <div className={`fixed top-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg text-xs font-medium border shadow-lg transition-all ${
+            toast.type === 'success' ? 'bg-[#0e2118] text-emerald-300 border-emerald-800/60' : 'bg-[#291216] text-rose-300 border-rose-800/60'
           }`}>
-            {toast.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            {toast.type === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4 text-rose-400" />}
             {toast.message}
           </div>
         )}
 
         {/* Top Executive Header Banner */}
-        <div className="glass-card rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-l-4 border-l-brand-500 shadow-2xl relative overflow-hidden">
-          <div className="space-y-1.5 z-10">
+        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
+          <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-md bg-brand-500/20 text-brand-300 text-[10px] font-black uppercase tracking-widest border border-brand-500/30">
-                Command Center
-              </span>
-              <span className="text-gray-400 text-xs font-semibold">• Live HRMS Operations</span>
+              <span className="text-xs font-medium text-zinc-400">Organization Overview</span>
+              <span className="text-zinc-600">•</span>
+              <span className="text-xs text-zinc-400">San Francisco HQ</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white font-heading tracking-tight">
-              ADMIN DASHBOARD 👨‍💼
+            <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">
+              Workforce Operations
             </h1>
-            <p className="text-gray-400 text-xs md:text-sm max-w-xl">
-              Real-time administrative telemetry, approvals pipeline, multi-department analytics, and ledger control.
+            <p className="text-xs text-zinc-400 max-w-xl">
+              Centralized monitoring for headcount, attendance rates, payroll disbursements, and pending approvals.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 z-10 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             {/* Timeframe Filter Pills */}
-            <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 text-xs">
+            <div className="flex items-center bg-[#181a24] p-1 rounded-lg border border-[#272a38] text-xs">
               <button
                 onClick={() => setTimeRange('month')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                  timeRange === 'month' ? 'bg-brand-600 text-white shadow-md' : 'text-gray-400 hover:text-white'
+                className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
+                  timeRange === 'month' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Month
               </button>
               <button
                 onClick={() => setTimeRange('quarter')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                  timeRange === 'quarter' ? 'bg-brand-600 text-white shadow-md' : 'text-gray-400 hover:text-white'
+                className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
+                  timeRange === 'quarter' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Q3
               </button>
               <button
                 onClick={() => setTimeRange('year')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                  timeRange === 'year' ? 'bg-brand-600 text-white shadow-md' : 'text-gray-400 hover:text-white'
+                className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
+                  timeRange === 'year' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 FY26
@@ -361,105 +343,104 @@ const Overview: React.FC = () => {
 
             <button
               onClick={() => setShowBulletinModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl text-xs border border-white/10 transition cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-2 bg-[#181a24] hover:bg-[#202330] text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
             >
-              <Megaphone className="w-4 h-4 text-purple-400" />
-              Broadcast Notice
+              <Megaphone className="w-3.5 h-3.5 text-zinc-400" />
+              Post Notice
             </button>
 
             <Link
               to="/onboard"
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition duration-200 shadow-lg shadow-brand-500/25 cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg text-xs transition shadow-sm cursor-pointer"
             >
-              <PlusCircle className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               Onboard Employee
             </Link>
           </div>
         </div>
 
         {/* 4 Core Admin KPI Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Employees */}
-          <div className="glass-card p-6 rounded-2xl flex items-center gap-4 hover:border-brand-500/40 transition-all duration-300 shadow-xl group">
-            <div className="p-3.5 rounded-2xl bg-brand-500/10 text-brand-400 border border-brand-500/20 group-hover:scale-110 transition-transform">
-              <Users className="w-6 h-6" />
-            </div>
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Employees</span>
-              <span className="text-2xl font-black text-white font-heading">{totalEmployeesCount}</span>
-              <span className="block text-[10px] text-emerald-400 font-semibold mt-0.5">Active Headcount</span>
+              <span className="block text-xs font-medium text-zinc-400">Total Headcount</span>
+              <span className="text-2xl font-semibold text-white tracking-tight mt-1 block">{totalEmployeesCount}</span>
+              <span className="block text-[11px] text-zinc-500 mt-1">Active employees</span>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-[#181a24] border border-[#272a38] flex items-center justify-center text-zinc-300">
+              <Users className="w-5 h-5" />
             </div>
           </div>
 
           {/* Present Today */}
-          <div className="glass-card p-6 rounded-2xl flex items-center gap-4 hover:border-emerald-500/40 transition-all duration-300 shadow-xl group">
-            <div className="p-3.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform">
-              <CheckCircle className="w-6 h-6" />
-            </div>
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Present Today</span>
-              <span className="text-2xl font-black text-white font-heading">{presentTodayCount}</span>
-              <span className="block text-[10px] text-emerald-400 font-semibold mt-0.5">92% On-Site / Remote</span>
+              <span className="block text-xs font-medium text-zinc-400">Present Today</span>
+              <span className="text-2xl font-semibold text-white tracking-tight mt-1 block">{presentTodayCount}</span>
+              <span className="block text-[11px] text-emerald-400 font-medium mt-1">92% Attendance</span>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <CheckCircle className="w-5 h-5" />
             </div>
           </div>
 
           {/* On Leave Today */}
-          <div className="glass-card p-6 rounded-2xl flex items-center gap-4 hover:border-amber-500/40 transition-all duration-300 shadow-xl group">
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:scale-110 transition-transform">
-              <Calendar className="w-6 h-6" />
-            </div>
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">On Leave Today</span>
-              <span className="text-2xl font-black text-white font-heading">{onLeaveTodayCount}</span>
-              <span className="block text-[10px] text-amber-400 font-semibold mt-0.5">Approved Time Off</span>
+              <span className="block text-xs font-medium text-zinc-400">On Leave Today</span>
+              <span className="text-2xl font-semibold text-white tracking-tight mt-1 block">{onLeaveTodayCount}</span>
+              <span className="block text-[11px] text-amber-400 font-medium mt-1">Approved PTO</span>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <Calendar className="w-5 h-5" />
             </div>
           </div>
 
           {/* Monthly Payroll */}
-          <div className="glass-card p-6 rounded-2xl flex items-center gap-4 hover:border-purple-500/40 transition-all duration-300 shadow-xl group">
-            <div className="p-3.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 group-hover:scale-110 transition-transform">
-              <CreditCard className="w-6 h-6" />
-            </div>
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex items-center justify-between shadow-sm">
             <div>
-              <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                {timeRange === 'month' ? 'Monthly Payroll' : timeRange === 'quarter' ? 'Q3 Payroll' : 'FY26 Payroll'}
+              <span className="block text-xs font-medium text-zinc-400">
+                {timeRange === 'month' ? 'Payroll (Month)' : timeRange === 'quarter' ? 'Payroll (Q3)' : 'Payroll (FY26)'}
               </span>
-              <span className="text-2xl font-black text-white font-heading">{formatCurrency(totalMonthlyPayroll)}</span>
-              <span className="block text-[10px] text-brand-400 font-semibold mt-0.5">Disbursed via Ledger</span>
+              <span className="text-2xl font-semibold text-white tracking-tight mt-1 block">{formatCurrency(totalMonthlyPayroll)}</span>
+              <span className="block text-[11px] text-indigo-400 font-medium mt-1">Direct Disbursal</span>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <CreditCard className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        {/* Interactive Pending Approvals Center */}
-        <div className="glass-card p-6 rounded-2xl border border-white/5 shadow-xl space-y-4">
+        {/* Action Required: Pending Approvals Hub */}
+        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <Clock3 className="w-4 h-4 text-amber-400" />
-                Action Required: Pending Approvals Hub
+                Pending Approvals
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold border border-amber-500/20">
-                {pendingLeaves.length + pendingExpenses.length} Total
+              <span className="px-2 py-0.5 rounded-md bg-[#181a24] text-zinc-300 text-xs font-medium border border-[#272a38]">
+                {pendingLeaves.length + pendingExpenses.length} awaiting review
               </span>
             </div>
 
-            {/* Sub-tab selection */}
-            <div className="flex items-center bg-white/5 p-1 rounded-xl border border-white/10 text-xs">
+            <div className="flex items-center bg-[#181a24] p-0.5 rounded-lg border border-[#272a38] text-xs">
               <button
                 onClick={() => setApprovalsTab('leaves')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-2 ${
-                  approvalsTab === 'leaves' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-gray-400 hover:text-white'
+                className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
+                  approvalsTab === 'leaves' ? 'bg-[#272a38] text-white' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                Leaves ({pendingLeaves.length})
+                Leave Requests ({pendingLeaves.length})
               </button>
               <button
                 onClick={() => setApprovalsTab('expenses')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-2 ${
-                  approvalsTab === 'expenses' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:text-white'
+                className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
+                  approvalsTab === 'expenses' ? 'bg-[#272a38] text-white' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                Expenses ({pendingExpenses.length})
+                Expense Claims ({pendingExpenses.length})
               </button>
             </div>
           </div>
@@ -471,38 +452,38 @@ const Overview: React.FC = () => {
                 <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-white/10 text-gray-400 font-semibold">
-                        <th className="pb-3">Employee</th>
-                        <th className="pb-3">Type</th>
-                        <th className="pb-3">Duration & Dates</th>
-                        <th className="pb-3">Reason</th>
-                        <th className="pb-3 text-right">Quick Action</th>
+                      <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                        <th className="pb-2.5">Employee</th>
+                        <th className="pb-2.5">Type</th>
+                        <th className="pb-2.5">Dates</th>
+                        <th className="pb-2.5">Reason</th>
+                        <th className="pb-2.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[#1e212d]">
                       {pendingLeaves.slice(0, 4).map((l: any) => (
-                        <tr key={l._id} className="hover:bg-white/2 transition">
-                          <td className="py-3 font-bold text-white">
+                        <tr key={l._id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="py-3 font-medium text-white">
                             {l.employeeDetails?.firstName} {l.employeeDetails?.lastName}
-                            <span className="block text-[10px] text-gray-400 font-normal">
-                              {l.employeeDetails?.jobTitle || 'Staff Member'}
+                            <span className="block text-[11px] text-zinc-500 font-normal">
+                              {l.employeeDetails?.jobTitle || 'Staff'}
                             </span>
                           </td>
                           <td className="py-3">
-                            <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">
+                            <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[11px] font-medium border border-zinc-700">
                               {l.type}
                             </span>
                           </td>
-                          <td className="py-3 text-gray-300">
+                          <td className="py-3 text-zinc-300">
                             {new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}
                           </td>
-                          <td className="py-3 text-gray-400 max-w-xs truncate">{l.reason}</td>
+                          <td className="py-3 text-zinc-400 max-w-xs truncate">{l.reason}</td>
                           <td className="py-3 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => updateLeaveMutation.mutate({ id: l._id, status: 'Approved' })}
                                 disabled={updateLeaveMutation.isPending}
-                                className="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition cursor-pointer"
+                                className="p-1.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition cursor-pointer"
                                 title="Approve Request"
                               >
                                 <Check className="w-3.5 h-3.5" />
@@ -510,7 +491,7 @@ const Overview: React.FC = () => {
                               <button
                                 onClick={() => updateLeaveMutation.mutate({ id: l._id, status: 'Rejected' })}
                                 disabled={updateLeaveMutation.isPending}
-                                className="p-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 transition cursor-pointer"
+                                className="p-1.5 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition cursor-pointer"
                                 title="Reject Request"
                               >
                                 <X className="w-3.5 h-3.5" />
@@ -523,8 +504,8 @@ const Overview: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <div className="p-6 text-center text-xs text-gray-500 italic">
-                  All employee leave requests are reviewed. Zero pending approvals!
+                <div className="p-5 text-center text-xs text-zinc-500">
+                  No pending leave requests requiring review.
                 </div>
               )}
             </div>
@@ -537,33 +518,33 @@ const Overview: React.FC = () => {
                 <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-white/10 text-gray-400 font-semibold">
-                        <th className="pb-3">Employee</th>
-                        <th className="pb-3">Category</th>
-                        <th className="pb-3">Amount</th>
-                        <th className="pb-3">Description</th>
-                        <th className="pb-3 text-right">Quick Action</th>
+                      <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                        <th className="pb-2.5">Employee</th>
+                        <th className="pb-2.5">Category</th>
+                        <th className="pb-2.5">Amount</th>
+                        <th className="pb-2.5">Description</th>
+                        <th className="pb-2.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[#1e212d]">
                       {pendingExpenses.slice(0, 4).map((e: any) => (
-                        <tr key={e._id} className="hover:bg-white/2 transition">
-                          <td className="py-3 font-bold text-white">
+                        <tr key={e._id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="py-3 font-medium text-white">
                             {e.employee?.firstName} {e.employee?.lastName}
                           </td>
                           <td className="py-3">
-                            <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold">
+                            <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[11px] font-medium border border-zinc-700">
                               {e.category}
                             </span>
                           </td>
-                          <td className="py-3 font-bold text-emerald-400">${e.amount}</td>
-                          <td className="py-3 text-gray-400 max-w-xs truncate">{e.description}</td>
+                          <td className="py-3 font-semibold text-white">${e.amount}</td>
+                          <td className="py-3 text-zinc-400 max-w-xs truncate">{e.description}</td>
                           <td className="py-3 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => updateExpenseMutation.mutate({ id: e._id, status: 'Approved' })}
                                 disabled={updateExpenseMutation.isPending}
-                                className="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition cursor-pointer"
+                                className="p-1.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition cursor-pointer"
                                 title="Approve Claim"
                               >
                                 <Check className="w-3.5 h-3.5" />
@@ -571,7 +552,7 @@ const Overview: React.FC = () => {
                               <button
                                 onClick={() => updateExpenseMutation.mutate({ id: e._id, status: 'Rejected' })}
                                 disabled={updateExpenseMutation.isPending}
-                                className="p-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 transition cursor-pointer"
+                                className="p-1.5 rounded-md bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition cursor-pointer"
                                 title="Reject Claim"
                               >
                                 <X className="w-3.5 h-3.5" />
@@ -584,111 +565,101 @@ const Overview: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <div className="p-6 text-center text-xs text-gray-500 italic">
-                  All reimbursement claims are processed and settled. Zero pending approvals!
+                <div className="p-5 text-center text-xs text-zinc-500">
+                  All employee expense claims have been processed.
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* 4 Advanced Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* 1. 7-Day Attendance Velocity Area Chart */}
+        {/* 4 Clean Enterprise Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <AttendanceTrendAreaChart />
-
-          {/* 2. Department Cost Center Bar Chart */}
-          {reportList && reportList.length > 0 && (
-            <CostBarChart data={reportList} />
-          )}
-
-          {/* 3. Department Staff Share Donut Chart */}
-          {reportList && reportList.length > 0 && (
-            <StaffDonutChart data={reportList} />
-          )}
-
-          {/* 4. Expense Reimbursements by Category */}
+          {reportList && reportList.length > 0 && <CostBarChart data={reportList} />}
+          {reportList && reportList.length > 0 && <StaffDonutChart data={reportList} />}
           <ExpenseDistributionChart />
         </div>
 
-        {/* Corporate Bulletins & Quick Navigation */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 glass-card p-6 rounded-2xl border border-white/5 space-y-4">
+        {/* Bulletins & Shortcuts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Megaphone className="w-4 h-4 text-brand-400" /> Active Corporate Announcements
+              <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+                <Megaphone className="w-4 h-4 text-indigo-400" />
+                Active Announcements
               </h3>
               <button
                 onClick={() => setShowBulletinModal(true)}
-                className="text-xs text-brand-400 hover:text-brand-300 font-semibold"
+                className="text-xs text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
               >
-                + New Announcement
+                + Publish Notice
               </button>
             </div>
 
             {bulletinsList && bulletinsList.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {bulletinsList.slice(0, 4).map((bul: any) => (
-                  <div key={bul._id} className="p-4 bg-white/2 border border-white/5 rounded-xl space-y-2 hover:bg-white/4 transition">
+                  <div key={bul._id} className="p-3.5 bg-[#0e1017] border border-[#1e212d] rounded-lg space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider border ${
-                        bul.priority === 'High' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                        bul.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                        'bg-slate-500/10 text-slate-400 border-slate-500/20'
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                        bul.priority === 'High' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
+                        bul.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                        'bg-zinc-800 text-zinc-300 border border-zinc-700'
                       }`}>
-                        {bul.priority}
+                        {bul.priority} Priority
                       </span>
-                      <span className="text-[10px] text-gray-500">{new Date(bul.createdAt).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-zinc-500">{new Date(bul.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-white line-clamp-1">{bul.title}</h4>
-                    <p className="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">{bul.content}</p>
+                    <h4 className="text-xs font-semibold text-white line-clamp-1">{bul.title}</h4>
+                    <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">{bul.content}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-500 italic py-4">No active company announcements published today.</p>
+              <p className="text-xs text-zinc-500 italic py-4">No active notices published.</p>
             )}
           </div>
 
-          <div className="glass-card p-6 rounded-2xl border border-white/5 space-y-3">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" /> Administrative Operations
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-zinc-400" /> Administrative Modules
             </h3>
-            <div className="space-y-2 pt-1">
-              <Link to="/schedule" className="flex items-center justify-between p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 text-xs font-semibold text-gray-300 hover:text-white transition">
-                <span>Manage Shifts & Rotas</span>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+            <div className="space-y-1.5 pt-1">
+              <Link to="/schedule" className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] hover:bg-[#161822] border border-[#1e212d] text-xs font-medium text-zinc-300 hover:text-white transition">
+                <span>Manage Shifts & Schedules</span>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
               </Link>
-              <Link to="/attendance" className="flex items-center justify-between p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 text-xs font-semibold text-gray-300 hover:text-white transition">
-                <span>Live Attendance Roster</span>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+              <Link to="/attendance" className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] hover:bg-[#161822] border border-[#1e212d] text-xs font-medium text-zinc-300 hover:text-white transition">
+                <span>Attendance Registry</span>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
               </Link>
-              <Link to="/reviews" className="flex items-center justify-between p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 text-xs font-semibold text-gray-300 hover:text-white transition">
-                <span>Performance Reviews</span>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+              <Link to="/reviews" className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] hover:bg-[#161822] border border-[#1e212d] text-xs font-medium text-zinc-300 hover:text-white transition">
+                <span>Performance & Reviews</span>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
               </Link>
-              <Link to="/documents" className="flex items-center justify-between p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 text-xs font-semibold text-gray-300 hover:text-white transition">
-                <span>Document Cabinet</span>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+              <Link to="/documents" className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] hover:bg-[#161822] border border-[#1e212d] text-xs font-medium text-zinc-300 hover:text-white transition">
+                <span>Document Vault</span>
+                <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Modal: Broadcast Bulletin */}
+        {/* Modal: Broadcast Notice */}
         {showBulletinModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-            <div className="glass-card rounded-2xl p-6 md:p-8 max-w-lg w-full border border-white/10 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Megaphone className="w-5 h-5 text-brand-400" />
-                  Broadcast Announcement
+            <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
+              <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+                <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                  <Megaphone className="w-4 h-4 text-indigo-400" />
+                  Broadcast Notice
                 </h3>
                 <button
                   onClick={() => setShowBulletinModal(false)}
-                  className="p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+                  className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -702,60 +673,60 @@ const Overview: React.FC = () => {
                     priority: bulletinPriority
                   });
                 }}
-                className="space-y-4"
+                className="space-y-3.5"
               >
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">Announcement Title</label>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">Title</label>
                   <input
                     type="text"
                     required
                     value={bulletinTitle}
                     onChange={(e) => setBulletinTitle(e.target.value)}
-                    placeholder="e.g. Annual Town Hall & Q3 Bonus Announcement"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500"
+                    placeholder="e.g. Q3 Company Review Meeting"
+                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">Priority Level</label>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">Priority</label>
                   <select
                     value={bulletinPriority}
                     onChange={(e: any) => setBulletinPriority(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
-                    <option value="Low">Low Priority</option>
-                    <option value="Medium">Medium Priority</option>
-                    <option value="High">High Priority (Urgent)</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">Message Content</label>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">Content</label>
                   <textarea
                     rows={4}
                     required
                     value={bulletinContent}
                     onChange={(e) => setBulletinContent(e.target.value)}
-                    placeholder="Enter announcement details for all employees..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-500 resize-none"
+                    placeholder="Enter details for the workforce..."
+                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex items-center justify-end gap-2.5 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowBulletinModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={broadcastBulletinMutation.isPending}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-lg shadow-brand-500/25 cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer"
                   >
-                    {broadcastBulletinMutation.isPending ? <Loader className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                    Publish Bulletin
+                    {broadcastBulletinMutation.isPending ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    Publish
                   </button>
                 </div>
               </form>
@@ -776,72 +747,69 @@ const Overview: React.FC = () => {
   const isClockedIn = !!todayAttendance?.clockIn && !todayAttendance?.clockOut;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Toast Alert */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold border shadow-2xl transition-all duration-300 animate-slide-in ${
-          toast.type === 'success' ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/30' : 'bg-rose-950/90 text-rose-300 border-rose-500/30'
+        <div className={`fixed top-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg text-xs font-medium border shadow-lg transition-all ${
+          toast.type === 'success' ? 'bg-[#0e2118] text-emerald-300 border-emerald-800/60' : 'bg-[#291216] text-rose-300 border-rose-800/60'
         }`}>
-          {toast.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+          {toast.type === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4 text-rose-400" />}
           {toast.message}
         </div>
       )}
 
-      {/* Personalized Greeting Banner with Quick Actions */}
-      <div className="glass-card rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-l-4 border-l-emerald-500 shadow-2xl relative overflow-hidden">
-        <div className="space-y-1.5 z-10">
+      {/* Greeting Banner with Direct Actions */}
+      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-widest border border-emerald-500/30">
-              Employee Portal
-            </span>
-            <span className="text-gray-400 text-xs font-semibold">• ID: {myProfile?.employeeId || 'EMP-ACTIVE'}</span>
+            <span className="text-xs font-medium text-zinc-400">Employee Workspace</span>
+            <span className="text-zinc-600">•</span>
+            <span className="text-xs text-zinc-400">ID: {myProfile?.employeeId || 'EMP-ACTIVE'}</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-white font-heading tracking-tight">
-            WELCOME BACK, {employeeName.toUpperCase()} 👋
+          <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">
+            Welcome back, {employeeName}
           </h1>
-          <p className="text-gray-400 text-xs md:text-sm max-w-xl">
-            {myProfile?.jobTitle || 'Staff Member'} • {myProfile?.department?.name || 'Engineering'}
+          <p className="text-xs text-zinc-400 max-w-xl">
+            {myProfile?.jobTitle || 'Staff Member'} • {myProfile?.department?.name || 'Operations'}
           </p>
         </div>
 
-        {/* Direct Action Triggers */}
-        <div className="flex items-center gap-3 z-10 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={() => setShowLeaveModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl text-xs transition duration-200 shadow-lg shadow-emerald-500/25 cursor-pointer select-none"
+            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg text-xs transition shadow-sm cursor-pointer select-none"
           >
-            <Calendar className="w-4 h-4" />
+            <Calendar className="w-3.5 h-3.5" />
             Apply Leave
           </button>
           <Link
             to="/payroll"
-            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs transition duration-200 shadow-lg shadow-brand-500/25 cursor-pointer select-none"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#181a24] hover:bg-[#202330] text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer select-none"
           >
-            <FileDown className="w-4 h-4" />
+            <FileDown className="w-3.5 h-3.5" />
             View Payslip
           </Link>
         </div>
       </div>
 
-      {/* Live Clock-In / Clock-Out Widget (Functional Mini-Terminal) */}
-      <div className="glass-card p-6 rounded-2xl border border-white/5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-white/2 via-white/4 to-transparent">
-        <div className="flex items-center gap-4">
-          <div className="p-3.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <Clock className="w-7 h-7" />
+      {/* Live Clock-In Widget */}
+      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <Clock className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-black text-white font-mono tracking-wider">
+              <span className="text-xl font-bold text-white font-mono">
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
               </span>
-              <span className="text-xs text-gray-400 font-semibold">
+              <span className="text-xs text-zinc-400 font-medium">
                 {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
               </span>
             </div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
-                <MapPin className="w-3 h-3" /> Geofence Verified: Office Zone (San Francisco HQ)
-              </span>
+            <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
+              <MapPin className="w-3 h-3 text-emerald-400" />
+              <span>Office Geofence Verified (San Francisco HQ)</span>
             </div>
           </div>
         </div>
@@ -849,53 +817,48 @@ const Overview: React.FC = () => {
         <div className="flex items-center gap-3">
           {todayAttendance?.clockIn ? (
             <div className="text-right">
-              <span className="block text-xs font-bold text-emerald-400">
+              <span className="block text-xs font-semibold text-emerald-400">
                 Clocked in at {new Date(todayAttendance.clockIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
-              <span className="block text-[10px] text-gray-400">
-                Status: {todayAttendance.clockOut ? 'Completed for today' : 'Shift Active'}
+              <span className="block text-[10px] text-zinc-500">
+                {todayAttendance.clockOut ? 'Completed for today' : 'Active Shift'}
               </span>
             </div>
           ) : (
-            <span className="text-xs text-gray-400 italic">Not clocked in today yet</span>
+            <span className="text-xs text-zinc-500">Not clocked in today</span>
           )}
 
           {!isClockedIn ? (
             <button
               onClick={() => clockInMutation.mutate()}
               disabled={clockInMutation.isPending || !!todayAttendance?.clockOut}
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-medium rounded-lg text-xs shadow-sm transition cursor-pointer"
             >
-              {clockInMutation.isPending ? <Loader className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-              Clock In Now
+              {clockInMutation.isPending ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+              Clock In
             </button>
           ) : (
             <button
               onClick={() => clockOutMutation.mutate()}
               disabled={clockOutMutation.isPending}
-              className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-lg shadow-rose-600/30 transition cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-medium rounded-lg text-xs shadow-sm transition cursor-pointer"
             >
-              {clockOutMutation.isPending ? <Loader className="w-4 h-4 animate-spin" /> : <Clock className="w-4 h-4" />}
+              {clockOutMutation.isPending ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Clock className="w-3.5 h-3.5" />}
               Clock Out
             </button>
           )}
         </div>
       </div>
 
-      {/* 3 Dedicated Personal Visual Gauges & Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Gauge: Attendance Ring */}
+      {/* 3 Dedicated Personal Gauges & Structure */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <EmployeeAttendanceGauge
           percentage={attendancePercentage}
           daysPresent={myAttendance?.length || 21}
           totalDays={22}
           streakDays={14}
         />
-
-        {/* Meters: Leave Allocation Balances */}
         <LeaveBalanceMeter />
-
-        {/* Bar: Salary Breakdown Structure */}
         <SalaryStructureBreakdown
           baseSalary={latestPayroll?.baseSalary || 7500}
           allowances={latestPayroll?.allowances || 1850}
@@ -904,48 +867,48 @@ const Overview: React.FC = () => {
         />
       </div>
 
-      {/* Employee Workspace Grid: Notifications & Leave Tracker */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Notifications & Feed */}
-        <div className="glass-card p-6 rounded-2xl border border-white/5 space-y-4">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-brand-400" /> Recent Notifications
+      {/* Notifications & Leave Tracker */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Recent Notifications */}
+        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-3.5">
+          <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-400" /> Recent Updates
           </h3>
-          <div className="space-y-3">
-            <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-start gap-3">
+          <div className="space-y-2.5">
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
               <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <span className="block text-xs font-bold text-white">Your leave request was approved</span>
-                <span className="block text-[10px] text-gray-400 mt-0.5">Authorized by reporting manager • 2 days ago</span>
+                <span className="block text-xs font-medium text-white">Leave request approved</span>
+                <span className="block text-[10px] text-zinc-500 mt-0.5">Approved by department supervisor</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-brand-500/5 border border-brand-500/20 flex items-start gap-3">
-              <FileText className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
+              <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
               <div>
-                <span className="block text-xs font-bold text-white">Your August payslip is available</span>
-                <span className="block text-[10px] text-gray-400 mt-0.5">Tamper-proof PDF authenticated with SHA-256 seal</span>
+                <span className="block text-xs font-medium text-white">August payslip available</span>
+                <span className="block text-[10px] text-zinc-500 mt-0.5">Authenticated with SHA-256 digital seal</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-purple-500/5 border border-purple-500/20 flex items-start gap-3">
-              <Clock className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
+              <Clock className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
               <div>
-                <span className="block text-xs font-bold text-white">Shift Schedule Confirmed</span>
-                <span className="block text-[10px] text-gray-400 mt-0.5">Standard Day Shift (09:00 AM - 05:00 PM)</span>
+                <span className="block text-xs font-medium text-white">Shift Schedule Confirmed</span>
+                <span className="block text-[10px] text-zinc-500 mt-0.5">Day Shift (09:00 AM - 05:00 PM)</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* My Active Leave Requests */}
-        <div className="lg:col-span-2 glass-card p-6 rounded-2xl border border-white/5 space-y-4">
+        <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-400" /> My Leave Status Tracker
+            <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-indigo-400" /> Leave Status Tracker
             </h3>
-            <Link to="/leaves" className="text-xs text-brand-400 hover:text-brand-300 font-semibold">
-              Full Leave Ledger →
+            <Link to="/leaves" className="text-xs text-indigo-400 hover:text-indigo-300 font-medium">
+              View History →
             </Link>
           </div>
 
@@ -953,26 +916,26 @@ const Overview: React.FC = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-white/5 text-gray-400 font-semibold">
-                    <th className="pb-3">Type</th>
-                    <th className="pb-3">Dates</th>
-                    <th className="pb-3">Reason</th>
-                    <th className="pb-3">Status</th>
+                  <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                    <th className="pb-2.5">Type</th>
+                    <th className="pb-2.5">Dates</th>
+                    <th className="pb-2.5">Reason</th>
+                    <th className="pb-2.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-[#1e212d]">
                   {myLeavesList.slice(0, 4).map((l: any) => (
-                    <tr key={l._id} className="hover:bg-white/2 transition">
-                      <td className="py-3 font-semibold text-white">{l.type}</td>
-                      <td className="py-3 text-gray-300">
+                    <tr key={l._id} className="hover:bg-white/[0.02] transition">
+                      <td className="py-2.5 font-medium text-white">{l.type}</td>
+                      <td className="py-2.5 text-zinc-300">
                         {new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}
                       </td>
-                      <td className="py-3 text-gray-400 truncate max-w-xs">{l.reason}</td>
-                      <td className="py-3">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                          l.status === 'Approved' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' :
-                          l.status === 'Rejected' ? 'bg-red-500/15 text-red-400 border-red-500/30' :
-                          'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                      <td className="py-2.5 text-zinc-400 truncate max-w-xs">{l.reason}</td>
+                      <td className="py-2.5">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                          l.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                          l.status === 'Rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                          'bg-amber-500/10 text-amber-400 border-amber-500/20'
                         }`}>
                           {l.status}
                         </span>
@@ -983,45 +946,45 @@ const Overview: React.FC = () => {
               </table>
             </div>
           ) : (
-            <p className="text-xs text-gray-500 italic py-6 text-center">No leave requests filed yet. Click "Apply Leave" to submit time off.</p>
+            <p className="text-xs text-zinc-500 italic py-6 text-center">No leave requests filed yet.</p>
           )}
         </div>
       </div>
 
-      {/* Employee Quick Access Shortcuts */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Link to="/attendance" className="glass-card p-4 rounded-xl flex items-center gap-3 hover:border-emerald-500/30 transition group">
+      {/* Quick Access Shortcuts */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <Link to="/attendance" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><Clock className="w-4 h-4" /></div>
-          <span className="text-xs font-bold text-gray-300 group-hover:text-white">Attendance Logs</span>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Attendance Logs</span>
         </Link>
-        <Link to="/expenses" className="glass-card p-4 rounded-xl flex items-center gap-3 hover:border-blue-500/30 transition group">
-          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400"><Briefcase className="w-4 h-4" /></div>
-          <span className="text-xs font-bold text-gray-300 group-hover:text-white">File Expense</span>
+        <Link to="/expenses" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400"><Briefcase className="w-4 h-4" /></div>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white">File Expense</span>
         </Link>
-        <Link to="/reviews" className="glass-card p-4 rounded-xl flex items-center gap-3 hover:border-purple-500/30 transition group">
+        <Link to="/reviews" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400"><Award className="w-4 h-4" /></div>
-          <span className="text-xs font-bold text-gray-300 group-hover:text-white">Appraisals</span>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Appraisals</span>
         </Link>
-        <Link to="/documents" className="glass-card p-4 rounded-xl flex items-center gap-3 hover:border-indigo-500/30 transition group">
-          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400"><FolderLock className="w-4 h-4" /></div>
-          <span className="text-xs font-bold text-gray-300 group-hover:text-white">My Documents</span>
+        <Link to="/documents" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+          <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400"><FolderLock className="w-4 h-4" /></div>
+          <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Documents</span>
         </Link>
       </div>
 
       {/* Modal: Quick Apply Leave */}
       {showLeaveModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card rounded-2xl p-6 md:p-8 max-w-lg w-full border border-white/10 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-emerald-400" />
+          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+              <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-indigo-400" />
                 Apply for Leave
               </h3>
               <button
                 onClick={() => setShowLeaveModal(false)}
-                className="p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+                className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/5 cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -1036,14 +999,14 @@ const Overview: React.FC = () => {
                   reason: leaveReason
                 });
               }}
-              className="space-y-4"
+              className="space-y-3.5"
             >
               <div>
-                <label className="block text-xs font-bold text-gray-300 mb-1.5">Leave Category</label>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">Leave Category</label>
                 <select
                   value={leaveType}
                   onChange={(e: any) => setLeaveType(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Vacation">Vacation Leave</option>
                   <option value="Sick">Sick / Medical Leave</option>
@@ -1053,56 +1016,56 @@ const Overview: React.FC = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">Start Date</label>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">Start Date</label>
                   <input
                     type="date"
                     required
                     value={leaveStart}
                     onChange={(e) => setLeaveStart(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 mb-1.5">End Date</label>
+                  <label className="block text-xs font-medium text-zinc-300 mb-1">End Date</label>
                   <input
                     type="date"
                     required
                     value={leaveEnd}
                     onChange={(e) => setLeaveEnd(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-300 mb-1.5">Reason for Absence</label>
+                <label className="block text-xs font-medium text-zinc-300 mb-1">Reason for Absence</label>
                 <textarea
                   rows={3}
                   required
                   value={leaveReason}
                   onChange={(e) => setLeaveReason(e.target.value)}
                   placeholder="Provide brief context for the time off..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 resize-none"
+                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="flex items-center justify-end gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowLeaveModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={applyLeaveMutation.isPending}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/25 cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer"
                 >
-                  {applyLeaveMutation.isPending ? <Loader className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  Submit Leave Request
+                  {applyLeaveMutation.isPending ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  Submit
                 </button>
               </div>
             </form>
