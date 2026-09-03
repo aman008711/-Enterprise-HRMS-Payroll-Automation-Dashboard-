@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 
 const SkeletonCard: React.FC = () => (
-  <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 animate-pulse space-y-3">
+  <div className="bg-surface-card border border-surface-border rounded-xl p-5 animate-pulse space-y-3">
     <div className="flex items-center justify-between">
       <div className="h-3 w-24 bg-zinc-800 rounded" />
       <div className="w-8 h-8 bg-zinc-800 rounded-lg" />
@@ -397,7 +397,7 @@ const Overview: React.FC = () => {
         )}
 
         {/* Top Executive Header Banner */}
-        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
+        <div className="bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-zinc-400">Organization Overview</span>
@@ -452,7 +452,7 @@ const Overview: React.FC = () => {
         </div>
 
         {/* Requirement 3: Quick Actions Bar */}
-        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-3 flex items-center justify-between flex-wrap gap-2.5 shadow-sm">
+        <div className="bg-surface-card border border-surface-border rounded-xl p-3 flex items-center justify-between flex-wrap gap-2.5 shadow-sm">
           <span className="text-xs font-semibold text-zinc-400 px-2 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> Quick Actions
           </span>
@@ -511,7 +511,7 @@ const Overview: React.FC = () => {
             {/* Total Employees */}
             <div
               onClick={() => navigate('/employees')}
-              className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
+              className="bg-surface-card border border-surface-border hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
               title="Click to manage employee directory"
             >
               <div>
@@ -533,7 +533,7 @@ const Overview: React.FC = () => {
             {/* Present Today */}
             <div
               onClick={() => navigate('/attendance')}
-              className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
+              className="bg-surface-card border border-surface-border hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
               title="Click to view live attendance roster"
             >
               <div>
@@ -555,7 +555,7 @@ const Overview: React.FC = () => {
             {/* On Leave Today */}
             <div
               onClick={() => navigate('/leaves')}
-              className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
+              className="bg-surface-card border border-surface-border hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
               title="Click to view approved time off"
             >
               <div>
@@ -577,7 +577,7 @@ const Overview: React.FC = () => {
             {/* Monthly Payroll */}
             <div
               onClick={() => navigate('/payroll')}
-              className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
+              className="bg-surface-card border border-surface-border hover:border-zinc-700 hover:bg-[#141722] rounded-xl p-5 flex items-center justify-between shadow-sm cursor-pointer transition-all duration-150 group"
               title="Click to view payroll ledger"
             >
               <div>
@@ -601,7 +601,7 @@ const Overview: React.FC = () => {
         )}
 
         {/* Requirement 2: Action Required - Pending Approvals Hub with Polished Empty State */}
-        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-4">
+        <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
@@ -644,7 +644,7 @@ const Overview: React.FC = () => {
                 <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                      <tr className="border-b border-surface-border text-zinc-400 font-medium">
                         <th className="pb-2.5">Employee</th>
                         <th className="pb-2.5">Type</th>
                         <th className="pb-2.5">Dates</th>
@@ -652,9 +652,9 @@ const Overview: React.FC = () => {
                         <th className="pb-2.5 text-right">Quick Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1e212d]">
+                    <tbody className="divide-y divide-surface-border">
                       {pendingLeaves.slice(0, 4).map((l: any) => (
-                        <tr key={l._id} className="hover:bg-white/[0.02] transition-colors">
+                        <tr key={l._id} className="hover:bg-white/2 transition-colors">
                           <td className="py-3 font-medium text-white">
                             {l.employeeDetails?.firstName} {l.employeeDetails?.lastName}
                             <span className="block text-[11px] text-zinc-500 font-normal">
@@ -726,7 +726,7 @@ const Overview: React.FC = () => {
                 <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                      <tr className="border-b border-surface-border text-zinc-400 font-medium">
                         <th className="pb-2.5">Employee</th>
                         <th className="pb-2.5">Category</th>
                         <th className="pb-2.5">Amount</th>
@@ -734,9 +734,9 @@ const Overview: React.FC = () => {
                         <th className="pb-2.5 text-right">Quick Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1e212d]">
+                    <tbody className="divide-y divide-surface-border">
                       {pendingExpenses.slice(0, 4).map((e: any) => (
-                        <tr key={e._id} className="hover:bg-white/[0.02] transition-colors">
+                        <tr key={e._id} className="hover:bg-white/2 transition-colors">
                           <td className="py-3 font-medium text-white">
                             {e.employee?.firstName} {e.employee?.lastName}
                           </td>
@@ -808,7 +808,7 @@ const Overview: React.FC = () => {
         {/* Requirement 4: Recent Activity Stream & Bulletins Feed */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Recent Activity Timeline */}
-          <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4 shadow-sm">
+          <div className="lg:col-span-2 bg-surface-card border border-surface-border rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <Clock className="w-4 h-4 text-indigo-400" />
@@ -823,7 +823,7 @@ const Overview: React.FC = () => {
                 return (
                   <div
                     key={act.id}
-                    className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-3 hover:border-zinc-700 transition"
+                    className="p-3 rounded-lg bg-[#0e1017] border border-surface-border flex items-start gap-3 hover:border-zinc-700 transition"
                   >
                     <div className={`p-2 rounded-lg shrink-0 mt-0.5 ${act.color}`}>
                       <Icon className="w-4 h-4" />
@@ -842,7 +842,7 @@ const Overview: React.FC = () => {
           </div>
 
           {/* Bulletins Feed */}
-          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4 shadow-sm">
+          <div className="bg-surface-card border border-surface-border rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <Megaphone className="w-4 h-4 text-indigo-400" />
@@ -859,7 +859,7 @@ const Overview: React.FC = () => {
             {bulletinsList && bulletinsList.length > 0 ? (
               <div className="space-y-2.5">
                 {bulletinsList.slice(0, 3).map((bul: any) => (
-                  <div key={bul._id} className="p-3 bg-[#0e1017] border border-[#1e212d] rounded-lg space-y-1">
+                  <div key={bul._id} className="p-3 bg-[#0e1017] border border-surface-border rounded-lg space-y-1">
                     <div className="flex items-center justify-between">
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-medium ${
                         bul.priority === 'High' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
@@ -884,8 +884,8 @@ const Overview: React.FC = () => {
         {/* Modal: Broadcast Notice */}
         {showBulletinModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-            <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
-              <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+            <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
+              <div className="flex items-center justify-between border-b border-surface-border pb-3">
                 <h3 className="text-base font-semibold text-white flex items-center gap-2">
                   <Megaphone className="w-4 h-4 text-indigo-400" />
                   Post Company Announcement
@@ -918,7 +918,7 @@ const Overview: React.FC = () => {
                     value={bulletinTitle}
                     onChange={(e) => setBulletinTitle(e.target.value)}
                     placeholder="e.g. Q3 Company Review Meeting"
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -927,7 +927,7 @@ const Overview: React.FC = () => {
                   <select
                     value={bulletinPriority}
                     onChange={(e: any) => setBulletinPriority(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -943,7 +943,7 @@ const Overview: React.FC = () => {
                     value={bulletinContent}
                     onChange={(e) => setBulletinContent(e.target.value)}
                     placeholder="Enter details for the workforce..."
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
                   />
                 </div>
 
@@ -994,7 +994,7 @@ const Overview: React.FC = () => {
       )}
 
       {/* Greeting Banner with Direct Actions */}
-      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
+      <div className="bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-zinc-400">Employee Workspace</span>
@@ -1028,7 +1028,7 @@ const Overview: React.FC = () => {
       </div>
 
       {/* Live Clock-In Widget */}
-      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+      <div className="bg-surface-card border border-surface-border rounded-xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
             <Clock className="w-5 h-5" />
@@ -1105,12 +1105,12 @@ const Overview: React.FC = () => {
       {/* Notifications & Leave Tracker */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Recent Notifications */}
-        <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-3.5">
+        <div className="bg-surface-card border border-surface-border rounded-xl p-5 space-y-3.5">
           <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-400" /> Recent Updates
           </h3>
           <div className="space-y-2.5">
-            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-surface-border flex items-start gap-2.5">
               <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <span className="block text-xs font-medium text-white">Leave request approved</span>
@@ -1118,7 +1118,7 @@ const Overview: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-surface-border flex items-start gap-2.5">
               <FileText className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
               <div>
                 <span className="block text-xs font-medium text-white">August payslip available</span>
@@ -1126,7 +1126,7 @@ const Overview: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-[#0e1017] border border-[#1e212d] flex items-start gap-2.5">
+            <div className="p-3 rounded-lg bg-[#0e1017] border border-surface-border flex items-start gap-2.5">
               <Clock className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
               <div>
                 <span className="block text-xs font-medium text-white">Shift Schedule Confirmed</span>
@@ -1137,7 +1137,7 @@ const Overview: React.FC = () => {
         </div>
 
         {/* My Active Leave Requests */}
-        <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-2 bg-surface-card border border-surface-border rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
               <Calendar className="w-4 h-4 text-indigo-400" /> Leave Status Tracker
@@ -1151,16 +1151,16 @@ const Overview: React.FC = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-[#1e212d] text-zinc-400 font-medium">
+                  <tr className="border-b border-surface-border text-zinc-400 font-medium">
                     <th className="pb-2.5">Type</th>
                     <th className="pb-2.5">Dates</th>
                     <th className="pb-2.5">Reason</th>
                     <th className="pb-2.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1e212d]">
+                <tbody className="divide-y divide-surface-border">
                   {myLeavesList.slice(0, 4).map((l: any) => (
-                    <tr key={l._id} className="hover:bg-white/[0.02] transition">
+                    <tr key={l._id} className="hover:bg-white/2 transition">
                       <td className="py-2.5 font-medium text-white">{l.type}</td>
                       <td className="py-2.5 text-zinc-300">
                         {new Date(l.startDate).toLocaleDateString()} - {new Date(l.endDate).toLocaleDateString()}
@@ -1188,19 +1188,19 @@ const Overview: React.FC = () => {
 
       {/* Quick Access Shortcuts */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <Link to="/attendance" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+        <Link to="/attendance" className="bg-surface-card border border-surface-border hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><Clock className="w-4 h-4" /></div>
           <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Attendance Logs</span>
         </Link>
-        <Link to="/expenses" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+        <Link to="/expenses" className="bg-surface-card border border-surface-border hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400"><Briefcase className="w-4 h-4" /></div>
           <span className="text-xs font-medium text-zinc-300 group-hover:text-white">File Expense</span>
         </Link>
-        <Link to="/reviews" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+        <Link to="/reviews" className="bg-surface-card border border-surface-border hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400"><Award className="w-4 h-4" /></div>
           <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Appraisals</span>
         </Link>
-        <Link to="/documents" className="bg-[#11131a] border border-[#1e212d] hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
+        <Link to="/documents" className="bg-surface-card border border-surface-border hover:border-zinc-700 p-3.5 rounded-xl flex items-center gap-3 transition group">
           <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400"><FolderLock className="w-4 h-4" /></div>
           <span className="text-xs font-medium text-zinc-300 group-hover:text-white">Documents</span>
         </Link>
@@ -1209,8 +1209,8 @@ const Overview: React.FC = () => {
       {/* Modal: Quick Apply Leave */}
       {showLeaveModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+          <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-lg w-full shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-surface-border pb-3">
               <h3 className="text-base font-semibold text-white flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-indigo-400" />
                 Apply for Leave
@@ -1241,7 +1241,7 @@ const Overview: React.FC = () => {
                 <select
                   value={leaveType}
                   onChange={(e: any) => setLeaveType(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="Vacation">Vacation Leave</option>
                   <option value="Sick">Sick / Medical Leave</option>
@@ -1259,7 +1259,7 @@ const Overview: React.FC = () => {
                     required
                     value={leaveStart}
                     onChange={(e) => setLeaveStart(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -1269,7 +1269,7 @@ const Overview: React.FC = () => {
                     required
                     value={leaveEnd}
                     onChange={(e) => setLeaveEnd(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -1282,7 +1282,7 @@ const Overview: React.FC = () => {
                   value={leaveReason}
                   onChange={(e) => setLeaveReason(e.target.value)}
                   placeholder="Provide brief context for the time off..."
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
                 />
               </div>
 

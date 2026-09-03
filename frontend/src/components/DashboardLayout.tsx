@@ -138,7 +138,7 @@ const DashboardLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#090a0f] flex relative overflow-hidden custom-scrollbar">
+    <div className="min-h-screen bg-surface-bg flex relative overflow-hidden custom-scrollbar">
       {/* Sidebar Navigation - Desktop View */}
       <aside className="hidden md:flex md:w-64 flex-col bg-[#0c0e14] border-r border-[#1a1d27] shrink-0 z-20">
         {/* Brand Header */}
@@ -171,11 +171,10 @@ const DashboardLayout: React.FC = () => {
                       <Link
                         key={link.path}
                         to={link.path}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                          active
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${active
                             ? 'bg-indigo-600 text-white shadow-sm'
-                            : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04]'
-                        }`}
+                            : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/4'
+                          }`}
                       >
                         <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-zinc-400'}`} />
                         <span className="truncate">{link.name}</span>
@@ -192,7 +191,7 @@ const DashboardLayout: React.FC = () => {
         <div className="p-3.5 border-t border-[#1a1d27] bg-[#0c0e14]">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-[#11131a] hover:bg-[#161824] border border-[#1e212d] hover:border-indigo-500/30 transition group cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-surface-card hover:bg-[#161824] border border-surface-border hover:border-indigo-500/30 transition group cursor-pointer"
             title="View and edit your profile details"
           >
             <div className="w-8 h-8 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/40 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
@@ -209,7 +208,7 @@ const DashboardLayout: React.FC = () => {
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-white/[0.03] hover:bg-rose-500/10 text-zinc-400 hover:text-rose-400 border border-[#1e212d] hover:border-rose-500/20 rounded-lg transition text-xs font-medium cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-white/3 hover:bg-rose-500/10 text-zinc-400 hover:text-rose-400 border border-surface-border hover:border-rose-500/20 rounded-lg transition text-xs font-medium cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign Out
@@ -256,11 +255,10 @@ const DashboardLayout: React.FC = () => {
                             key={link.path}
                             to={link.path}
                             onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition ${
-                              active
+                            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition ${active
                                 ? 'bg-indigo-600 text-white'
                                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
-                            }`}
+                              }`}
                           >
                             <Icon className="w-4 h-4" />
                             {link.name}
@@ -327,8 +325,8 @@ const DashboardLayout: React.FC = () => {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-88 bg-[#11131a] border border-[#1e212d] rounded-xl shadow-2xl p-3 z-50 space-y-2 animate-fade-in">
-                  <div className="flex items-center justify-between pb-2 border-b border-[#1e212d] px-1">
+                <div className="absolute right-0 mt-2 w-80 sm:w-88 bg-surface-card border border-surface-border rounded-xl shadow-2xl p-3 z-50 space-y-2 animate-fade-in">
+                  <div className="flex items-center justify-between pb-2 border-b border-surface-border px-1">
                     <span className="text-xs font-semibold text-white">Notifications</span>
                     <span className="text-[10px] text-indigo-400 font-medium cursor-pointer hover:underline">
                       Mark all as read
@@ -340,11 +338,10 @@ const DashboardLayout: React.FC = () => {
                       return (
                         <div
                           key={n.id}
-                          className={`p-2.5 rounded-lg border flex items-start gap-2.5 transition text-xs ${
-                            n.unread
+                          className={`p-2.5 rounded-lg border flex items-start gap-2.5 transition text-xs ${n.unread
                               ? 'bg-[#161824] border-indigo-500/20'
-                              : 'bg-[#0e1017] border-[#1e212d]'
-                          }`}
+                              : 'bg-[#0e1017] border-surface-border'
+                            }`}
                         >
                           <div className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 shrink-0 mt-0.5">
                             <Icon className="w-3.5 h-3.5" />

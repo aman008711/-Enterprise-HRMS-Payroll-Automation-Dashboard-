@@ -332,7 +332,7 @@ const Payroll: React.FC = () => {
           {/* Executive Overview KPI Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-brand-500/30 transition-all duration-300">
-              <div className="p-3 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-lg shadow-brand-500/20">
+              <div className="p-3 rounded-xl bg-linear-to-tr from-brand-600 to-indigo-500 text-white shadow-lg shadow-brand-500/20">
                 <DollarSign className="w-5 h-5" />
               </div>
               <div>
@@ -344,7 +344,7 @@ const Payroll: React.FC = () => {
             </div>
 
             <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-emerald-500/30 transition-all duration-300">
-              <div className="p-3 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/20">
+              <div className="p-3 rounded-xl bg-linear-to-tr from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/20">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
@@ -356,7 +356,7 @@ const Payroll: React.FC = () => {
             </div>
 
             <div className="glass-card p-5 rounded-2xl flex items-center gap-4 border border-white/5 shadow-xl hover:border-purple-500/30 transition-all duration-300">
-              <div className="p-3 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20">
+              <div className="p-3 rounded-xl bg-linear-to-tr from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/20">
                 <Users className="w-5 h-5" />
               </div>
               <div>
@@ -370,7 +370,7 @@ const Payroll: React.FC = () => {
 
           <div className="glass-card rounded-2xl p-6 border border-white/5 shadow-xl">
             <div className="overflow-x-auto custom-scrollbar">
-              <table className="w-full min-w-[1000px] text-left border-collapse">
+              <table className="w-full min-w-250 text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10 bg-white/2">
                   {isAdminOrHR && <th className="px-6 py-4 text-xs font-bold text-gray-300 uppercase tracking-wider">Employee</th>}
@@ -479,7 +479,7 @@ const Payroll: React.FC = () => {
             <button
               onClick={handleDownloadMasterReport}
               disabled={downloadingReport}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs transition duration-200 cursor-pointer shadow-lg hover:shadow-indigo-500/25 shrink-0 select-none"
+              className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold rounded-xl text-xs transition duration-200 cursor-pointer shadow-lg hover:shadow-indigo-500/25 shrink-0 select-none"
             >
               {downloadingReport ? (
                 <>

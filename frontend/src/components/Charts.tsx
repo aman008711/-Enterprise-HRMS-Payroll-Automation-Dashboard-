@@ -26,7 +26,7 @@ export const CostBarChart: React.FC<ChartProps> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 h-64 flex items-center justify-center text-zinc-500 text-sm">
+      <div className="bg-surface-card border border-surface-border rounded-xl p-6 h-64 flex items-center justify-center text-zinc-500 text-sm">
         No financial cost center data available.
       </div>
     );
@@ -54,7 +54,7 @@ export const CostBarChart: React.FC<ChartProps> = ({ data }) => {
   const barColors = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6'];
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex flex-col justify-between shadow-sm">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 flex flex-col justify-between shadow-sm">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div>
           <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
@@ -216,7 +216,7 @@ export const StaffDonutChart: React.FC<ChartProps> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-6 h-64 flex items-center justify-center text-zinc-500 text-sm">
+      <div className="bg-surface-card border border-surface-border rounded-xl p-6 h-64 flex items-center justify-center text-zinc-500 text-sm">
         No roster distribution data available.
       </div>
     );
@@ -256,7 +256,7 @@ export const StaffDonutChart: React.FC<ChartProps> = ({ data }) => {
   const activeItem = hoveredIndex !== null ? segments[hoveredIndex] : null;
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 flex flex-col sm:flex-row items-center justify-around gap-6 shadow-sm">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 flex flex-col sm:flex-row items-center justify-around gap-6 shadow-sm">
       <div className="space-y-1 text-center sm:text-left flex-1">
         <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2 justify-center sm:justify-start">
           <Users className="w-4 h-4 text-emerald-400" />
@@ -274,12 +274,12 @@ export const StaffDonutChart: React.FC<ChartProps> = ({ data }) => {
                 onMouseEnter={() => setHoveredIndex(idx)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 className={`flex items-center justify-between p-1 rounded-md cursor-pointer transition text-xs ${
-                  isHovered ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                  isHovered ? 'bg-white/6' : 'hover:bg-white/3'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                  <span className="text-zinc-300 truncate max-w-[110px]">
+                  <span className="text-zinc-300 truncate max-w-27.5">
                     {item.departmentName || item._id || 'General'}
                   </span>
                 </div>
@@ -387,7 +387,7 @@ export const AttendanceTrendAreaChart: React.FC<{ data?: TrendPoint[] }> = ({ da
   const areaD = `${pathD} L ${getX(points.length - 1)} ${padT + chartH} L ${getX(0)} ${padT + chartH} Z`;
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-3">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm space-y-3">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
@@ -524,7 +524,7 @@ export const ExpenseDistributionChart: React.FC<{ items?: ExpenseCategory[] }> =
   const total = categories.reduce((sum, c) => sum + c.amount, 0);
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
@@ -584,7 +584,7 @@ export const EmployeeAttendanceGauge: React.FC<GaugeProps> = ({
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm flex flex-col items-center justify-between gap-4 text-center">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm flex flex-col items-center justify-between gap-4 text-center">
       <div className="flex items-center justify-between w-full">
         <span className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
           <Clock className="w-3.5 h-3.5 text-emerald-400" /> Attendance Rate
@@ -624,12 +624,12 @@ export const EmployeeAttendanceGauge: React.FC<GaugeProps> = ({
         </div>
       </div>
 
-      <div className="w-full flex items-center justify-around border-t border-[#1e212d] pt-3 text-xs">
+      <div className="w-full flex items-center justify-around border-t border-surface-border pt-3 text-xs">
         <div>
           <span className="block text-zinc-500 text-[10px]">Logged</span>
           <span className="font-semibold text-white">{daysPresent} / {totalDays}</span>
         </div>
-        <div className="h-5 w-px bg-[#1e212d]" />
+        <div className="h-5 w-px bg-surface-border" />
         <div>
           <span className="block text-zinc-500 text-[10px]">Overtime</span>
           <span className="font-semibold text-emerald-400">+4.5 hrs</span>
@@ -657,7 +657,7 @@ export const LeaveBalanceMeter: React.FC<{ items?: LeaveCategory[] }> = ({ items
   ];
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-indigo-400" />
@@ -712,7 +712,7 @@ export const SalaryStructureBreakdown: React.FC<SalaryProps> = ({
   const dedPct = 100 - netPct;
 
   return (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-surface-card border border-surface-border rounded-xl p-5 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-emerald-400" />
@@ -747,15 +747,15 @@ export const SalaryStructureBreakdown: React.FC<SalaryProps> = ({
       </div>
 
       <div className="grid grid-cols-3 gap-2.5 pt-2 text-center text-xs">
-        <div className="p-2 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+        <div className="p-2 rounded-lg bg-[#0e1017] border border-surface-border">
           <span className="block text-zinc-500 text-[10px]">Base Salary</span>
           <span className="font-semibold text-white">${baseSalary.toLocaleString()}</span>
         </div>
-        <div className="p-2 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+        <div className="p-2 rounded-lg bg-[#0e1017] border border-surface-border">
           <span className="block text-zinc-500 text-[10px]">Allowances</span>
           <span className="font-semibold text-emerald-400">+${allowances.toLocaleString()}</span>
         </div>
-        <div className="p-2 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+        <div className="p-2 rounded-lg bg-[#0e1017] border border-surface-border">
           <span className="block text-zinc-500 text-[10px]">Taxes / Deductions</span>
           <span className="font-semibold text-rose-400">-${deductions.toLocaleString()}</span>
         </div>

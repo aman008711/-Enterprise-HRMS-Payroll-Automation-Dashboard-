@@ -278,8 +278,8 @@ const Profile: React.FC = () => {
       {activeTab === 'my-profile' && (
         <form onSubmit={handleSaveMyProfile} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Personal & Contact Information */}
-          <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
-            <div className="border-b border-[#1e212d] pb-3">
+          <div className="lg:col-span-2 bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
+            <div className="border-b border-surface-border pb-3">
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <User className="w-4 h-4 text-indigo-400" />
                 Personal & Contact Details
@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
                   required
                   value={myFirstName}
                   onChange={(e) => setMyFirstName(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -308,7 +308,7 @@ const Profile: React.FC = () => {
                   required
                   value={myLastName}
                   onChange={(e) => setMyLastName(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -318,7 +318,7 @@ const Profile: React.FC = () => {
                   type="email"
                   disabled
                   value={myProfile?.user?.email || user?.email || ''}
-                  className="w-full bg-[#0a0c12] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-zinc-500 cursor-not-allowed"
+                  className="w-full bg-[#0a0c12] border border-surface-border rounded-lg px-3 py-2 text-xs text-zinc-500 cursor-not-allowed"
                   title="Official corporate email cannot be modified directly"
                 />
               </div>
@@ -330,7 +330,7 @@ const Profile: React.FC = () => {
                   value={myPhone}
                   onChange={(e) => setMyPhone(e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -341,7 +341,7 @@ const Profile: React.FC = () => {
                   value={myAddress}
                   onChange={(e) => setMyAddress(e.target.value)}
                   placeholder="Street address, city, state, postal code"
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -351,7 +351,7 @@ const Profile: React.FC = () => {
                   type="date"
                   value={myDob}
                   onChange={(e) => setMyDob(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -362,12 +362,12 @@ const Profile: React.FC = () => {
                   value={myEmergencyContact}
                   onChange={(e) => setMyEmergencyContact(e.target.value)}
                   placeholder="Name (e.g. Jane Doe - +1 555 1234)"
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
 
-            <div className="border-t border-[#1e212d] pt-4 space-y-4">
+            <div className="border-t border-surface-border pt-4 space-y-4">
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">Bio / Profile Summary</label>
                 <textarea
@@ -375,7 +375,7 @@ const Profile: React.FC = () => {
                   value={myBio}
                   onChange={(e) => setMyBio(e.target.value)}
                   placeholder="Share a short bio summarizing your background and role..."
-                  className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
                 />
               </div>
 
@@ -387,7 +387,7 @@ const Profile: React.FC = () => {
                     value={mySkills}
                     onChange={(e) => setMySkills(e.target.value)}
                     placeholder="React, TypeScript, Payroll Compliance"
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -398,7 +398,7 @@ const Profile: React.FC = () => {
                     value={myLinkedin}
                     onChange={(e) => setMyLinkedin(e.target.value)}
                     placeholder="https://linkedin.com/in/username"
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -421,9 +421,9 @@ const Profile: React.FC = () => {
           </div>
 
           {/* Right Column: Official Employment Record Card */}
-          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
+          <div className="bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 space-y-4 shadow-sm flex flex-col justify-between">
             <div className="space-y-4">
-              <div className="border-b border-[#1e212d] pb-3">
+              <div className="border-b border-surface-border pb-3">
                 <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-emerald-400" />
                   Official Employment Record
@@ -434,43 +434,43 @@ const Profile: React.FC = () => {
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Employee ID</span>
                   <span className="font-mono font-semibold text-white">{myProfile?.employeeId || 'EMP-ACTIVE'}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Department</span>
                   <span className="font-semibold text-white">{myProfile?.department?.name || 'General Operations'}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Designation</span>
                   <span className="font-semibold text-white">{myProfile?.jobTitle || 'Staff Member'}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Reports To</span>
                   <span className="font-semibold text-zinc-200">
                     {myProfile?.manager ? `${myProfile.manager.firstName} ${myProfile.manager.lastName}` : 'Executive Leadership'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Employment Status</span>
                   <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold">
                     {myProfile?.status || 'Active'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Date of Joining</span>
                   <span className="text-zinc-200">
                     {myProfile?.hireDate ? new Date(myProfile.hireDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Jan 15, 2024'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-[#1e212d]">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#0e1017] border border-surface-border">
                   <span className="text-zinc-400">Base Salary Grade</span>
                   <span className="font-semibold text-emerald-400">
                     ${(myProfile?.baseSalary || 7500).toLocaleString()}/mo
@@ -493,7 +493,7 @@ const Profile: React.FC = () => {
       {activeTab === 'directory' && isAdminOrHR && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Employee Directory List Selector */}
-          <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 space-y-4 shadow-sm">
+          <div className="bg-surface-card border border-surface-border rounded-xl p-5 space-y-4 shadow-sm">
             <div>
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <Users className="w-4 h-4 text-indigo-400" />
@@ -512,12 +512,12 @@ const Profile: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, ID, or email..."
-                className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#0e1017] border border-surface-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
 
             {/* Employee roster scroll list */}
-            <div className="space-y-1.5 max-h-[500px] overflow-y-auto custom-scrollbar">
+            <div className="space-y-1.5 max-h-125 overflow-y-auto custom-scrollbar">
               {loadingEmployees ? (
                 <div className="py-8 text-center space-y-2 text-zinc-400">
                   <Loader className="w-5 h-5 animate-spin mx-auto text-indigo-400" />
@@ -533,7 +533,7 @@ const Profile: React.FC = () => {
                       className={`p-3 rounded-lg border cursor-pointer transition ${
                         isSelected
                           ? 'bg-indigo-950/20 border-indigo-500/40'
-                          : 'bg-[#0e1017] border-[#1e212d] hover:border-zinc-700'
+                          : 'bg-[#0e1017] border-surface-border hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -563,14 +563,14 @@ const Profile: React.FC = () => {
 
           {/* Employee Record Editor (Admin & HR) */}
           {!selectedEmployee ? (
-            <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-8 flex flex-col items-center justify-center text-center space-y-2.5">
+            <div className="lg:col-span-2 bg-surface-card border border-surface-border rounded-xl p-8 flex flex-col items-center justify-center text-center space-y-2.5">
               <Users className="w-8 h-8 text-zinc-600" />
               <span className="text-sm font-semibold text-white">No Employee Selected</span>
               <p className="text-xs text-zinc-400">Select an employee from the directory list on the left to edit their record.</p>
             </div>
           ) : (
-            <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
-              <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+            <div className="lg:col-span-2 bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-surface-border pb-3">
                 <div>
                   <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                     <User className="w-4 h-4 text-emerald-400" />
@@ -594,7 +594,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminFirstName}
                     onChange={(e) => setAdminFirstName(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -605,7 +605,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminLastName}
                     onChange={(e) => setAdminLastName(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -616,7 +616,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminJobTitle}
                     onChange={(e) => setAdminJobTitle(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -625,7 +625,7 @@ const Profile: React.FC = () => {
                   <select
                     value={adminDepartment}
                     onChange={(e) => setAdminDepartment(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="">Select Department</option>
                     {departmentsList.map((dept: any) => (
@@ -641,7 +641,7 @@ const Profile: React.FC = () => {
                   <select
                     value={adminStatus}
                     onChange={(e) => setAdminStatus(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="Active">Active</option>
                     <option value="On Leave">On Leave</option>
@@ -656,7 +656,7 @@ const Profile: React.FC = () => {
                     min="0"
                     value={adminBaseSalary}
                     onChange={(e) => setAdminBaseSalary(Number(e.target.value))}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -666,7 +666,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminPhone}
                     onChange={(e) => setAdminPhone(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -676,7 +676,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminEmergencyContact}
                     onChange={(e) => setAdminEmergencyContact(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -686,7 +686,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminAddress}
                     onChange={(e) => setAdminAddress(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -696,7 +696,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminSkills}
                     onChange={(e) => setAdminSkills(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
