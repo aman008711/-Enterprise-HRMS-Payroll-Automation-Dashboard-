@@ -21,6 +21,7 @@ const Bulletins = lazy(() => import('./pages/Bulletins'));
 const Grievances = lazy(() => import('./pages/Grievances'));
 const Offboarding = lazy(() => import('./pages/Offboarding'));
 const AuditLogs = lazy(() => import('./pages/AuditLogs'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 // Initialize TanStack Query Client with global cache rules
 const queryClient = new QueryClient({
@@ -110,6 +111,7 @@ const AppRoutes: React.FC = () => {
             <Route path="bulletins" element={<Bulletins />} />
             <Route path="grievances" element={<Grievances />} />
             <Route path="offboarding" element={<Offboarding />} />
+            <Route path="profile" element={<Profile />} />
             <Route 
               path="audit-logs" 
               element={

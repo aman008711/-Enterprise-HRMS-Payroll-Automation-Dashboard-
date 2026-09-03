@@ -19,7 +19,8 @@ import {
   Inbox,
   Bell,
   UserPlus,
-  FileText
+  FileText,
+  User
 } from 'lucide-react';
 
 interface NavItem {
@@ -62,6 +63,7 @@ const DashboardLayout: React.FC = () => {
       category: 'Workspace',
       items: [
         { name: 'Overview', path: '/', icon: LayoutDashboard, roles: ['Admin', 'HR Manager', 'Employee'] },
+        { name: 'My Profile & Records', path: '/profile', icon: User, roles: ['Admin', 'HR Manager', 'Employee'] },
         { name: 'Document Cabinet', path: '/documents', icon: FolderLock, roles: ['Admin', 'HR Manager', 'Employee'] },
         { name: 'Bulletins & News', path: '/bulletins', icon: Megaphone, roles: ['Admin', 'HR Manager', 'Employee'] }
       ]
@@ -188,17 +190,23 @@ const DashboardLayout: React.FC = () => {
 
         {/* User Card & Signout Footer */}
         <div className="p-3.5 border-t border-[#1a1d27] bg-[#0c0e14]">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-[#11131a] border border-[#1e212d]">
-            <div className="w-8 h-8 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/40 flex items-center justify-center font-bold text-xs shrink-0">
+          <Link
+            to="/profile"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-[#11131a] hover:bg-[#161824] border border-[#1e212d] hover:border-indigo-500/30 transition group cursor-pointer"
+            title="View and edit your profile details"
+          >
+            <div className="w-8 h-8 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/40 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
               {user?.email[0]?.toUpperCase()}
             </div>
             <div className="overflow-hidden flex-1">
-              <span className="block text-xs font-medium text-white truncate">{user?.email}</span>
+              <span className="block text-xs font-medium text-white truncate group-hover:text-indigo-200 transition-colors">
+                {user?.email}
+              </span>
               <span className="block text-[10px] font-medium text-zinc-400 mt-0.5">
-                {user?.role}
+                {user?.role} • View Profile
               </span>
             </div>
-          </div>
+          </Link>
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 py-1.5 px-3 bg-white/[0.03] hover:bg-rose-500/10 text-zinc-400 hover:text-rose-400 border border-[#1e212d] hover:border-rose-500/20 rounded-lg transition text-xs font-medium cursor-pointer"
@@ -355,14 +363,20 @@ const DashboardLayout: React.FC = () => {
             </div>
 
             {/* User Profile Summary */}
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-medium text-zinc-200">{user?.email}</span>
-              <span className="text-[10px] text-zinc-400">{user?.role}</span>
-            </div>
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 group cursor-pointer hover:opacity-90 transition"
+              title="Manage Profile"
+            >
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors">{user?.email}</span>
+                <span className="text-[10px] text-zinc-400">{user?.role}</span>
+              </div>
 
-            <div className="w-8 h-8 rounded-lg bg-[#181a24] border border-[#272a38] flex items-center justify-center text-white font-semibold text-xs select-none">
-              {user?.email[0]?.toUpperCase()}
-            </div>
+              <div className="w-8 h-8 rounded-lg bg-[#181a24] group-hover:bg-[#202330] border border-[#272a38] group-hover:border-indigo-500/40 flex items-center justify-center text-white font-semibold text-xs select-none transition-colors">
+                {user?.email[0]?.toUpperCase()}
+              </div>
+            </Link>
           </div>
         </header>
 

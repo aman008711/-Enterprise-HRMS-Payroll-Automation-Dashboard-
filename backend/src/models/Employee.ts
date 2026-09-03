@@ -7,6 +7,12 @@ export interface IEmployee extends Document {
   lastName: string;
   employeeId: string;
   phone?: string;
+  address?: string;
+  emergencyContact?: string;
+  bio?: string;
+  skills?: string[];
+  linkedin?: string;
+  dateOfBirth?: Date;
   jobTitle: string;
   department: mongoose.Types.ObjectId;
   manager?: mongoose.Types.ObjectId;
@@ -45,6 +51,29 @@ const EmployeeSchema: Schema<IEmployee> = new Schema(
       trim: true,
       get: decrypt,
       set: encrypt
+    },
+    address: {
+      type: String,
+      trim: true
+    },
+    emergencyContact: {
+      type: String,
+      trim: true
+    },
+    bio: {
+      type: String,
+      trim: true
+    },
+    skills: {
+      type: [String],
+      default: []
+    },
+    linkedin: {
+      type: String,
+      trim: true
+    },
+    dateOfBirth: {
+      type: Date
     },
     jobTitle: {
       type: String,

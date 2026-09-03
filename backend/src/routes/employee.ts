@@ -1,5 +1,13 @@
 import { Router, Response } from 'express';
-import { getEmployees, onboardEmployee, sendCustomEmail, getMyProfile } from '../controllers/employee';
+import {
+  getEmployees,
+  onboardEmployee,
+  sendCustomEmail,
+  getMyProfile,
+  updateMyProfile,
+  getEmployeeById,
+  updateEmployeeById
+} from '../controllers/employee';
 import { protect, authorizeRoles } from '../middleware/auth';
 import { validateRequest } from '../middleware/validate';
 import { onboardEmployeeSchema } from '../middleware/schemas';
@@ -12,8 +20,9 @@ const router = Router();
 // Apply authentication security to all employee routes
 router.use(protect);
 
-// GET active user's own employee profile details (Any authenticated user)
+// Active user's own profile endpoints (Any authenticated user)
 router.get('/me', getMyProfile);
+router.put('/me', updateMyProfile);
 
 // Allow only Admin and HR Manager roles to onboard and view employee rosters
 router.get(
@@ -31,5 +40,9 @@ router.get(
 
 router.post('/', authorizeRoles('Admin', 'HR Manager'), validateRequest(onboardEmployeeSchema), onboardEmployee);
 router.post('/:id/email', authorizeRoles('Admin', 'HR Manager'), sendCustomEmail);
+
+// Admin / HR profile view and edit endpoints
+router.get('/:id', authorizeRoles('Admin', 'HR Manager'), getEmployeeById);
+router.put('/:id', authorizeRoles('Admin', 'HR Manager'), updateEmployeeById);
 
 export default router;

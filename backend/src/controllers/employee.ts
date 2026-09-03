@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import Employee from '../models/Employee';
 import User from '../models/User';
+import Department from '../models/Department';
 import { ErrorResponse } from '../middleware/error';
 import { createAuditLog } from '../utils/audit';
 
@@ -226,19 +227,189 @@ export const sendCustomEmail = async (req: Request, res: Response, next: NextFun
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authReq = req as any;
-    const employee = await Employee.findOne({ user: authReq.user?._id })
+    let employee = await Employee.findOne({ user: authReq.user?._id })
       .populate('user', 'email role')
       .populate('department', 'name code')
-      .populate('manager', 'firstName lastName employeeId jobTitle')
-      .lean();
+      .populate('manager', 'firstName lastName employeeId jobTitle');
 
     if (!employee) {
-      return next(new ErrorResponse('Employee profile not found for this account', 404));
+      if (authReq.user?.role === 'Admin' || authReq.user?.role === 'HR Manager') {
+        const defaultDept = await Department.findOne() || { _id: new mongoose.Types.ObjectId() };
+        employee = await Employee.create({
+          user: authReq.user._id,
+          firstName: authReq.user.email.split('@')[0],
+          lastName: authReq.user.role === 'Admin' ? 'Administrator' : 'Manager',
+          employeeId: `EMP-${Math.floor(100 + Math.random() * 900)}`,
+          jobTitle: authReq.user.role === 'Admin' ? 'System Administrator' : 'HR Operations Manager',
+          department: defaultDept._id,
+          status: 'Active',
+          baseSalary: 12500,
+          hireDate: new Date()
+        });
+        employee = await Employee.findById(employee._id)
+          .populate('user', 'email role')
+          .populate('department', 'name code')
+          .populate('manager', 'firstName lastName employeeId jobTitle');
+      } else {
+        return next(new ErrorResponse('Employee profile not found for this account', 404));
+      }
     }
 
     res.status(200).json({
       success: true,
       data: employee
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Update active user's own profile information
+// @route   PUT /api/employees/me
+// @access  Private (Any authenticated user)
+export const updateMyProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authReq = req as any;
+    let employee = await Employee.findOne({ user: authReq.user?._id });
+
+    if (!employee) {
+      if (authReq.user?.role === 'Admin' || authReq.user?.role === 'HR Manager') {
+        const defaultDept = await Department.findOne() || { _id: new mongoose.Types.ObjectId() };
+        employee = await Employee.create({
+          user: authReq.user._id,
+          firstName: req.body.firstName || authReq.user.email.split('@')[0],
+          lastName: req.body.lastName || 'Administrator',
+          employeeId: `EMP-${Math.floor(100 + Math.random() * 900)}`,
+          jobTitle: authReq.user.role === 'Admin' ? 'System Administrator' : 'HR Operations Manager',
+          department: defaultDept._id,
+          status: 'Active',
+          baseSalary: 12500,
+          hireDate: new Date()
+        });
+      } else {
+        return next(new ErrorResponse('Employee profile not found for this account', 404));
+      }
+    }
+
+    const {
+      firstName,
+      lastName,
+      phone,
+      address,
+      emergencyContact,
+      bio,
+      skills,
+      linkedin,
+      dateOfBirth
+    } = req.body;
+
+    if (firstName) employee.firstName = firstName;
+    if (lastName) employee.lastName = lastName;
+    if (phone !== undefined) employee.phone = phone;
+    if (address !== undefined) employee.address = address;
+    if (emergencyContact !== undefined) employee.emergencyContact = emergencyContact;
+    if (bio !== undefined) employee.bio = bio;
+    if (skills !== undefined) {
+      employee.skills = Array.isArray(skills) ? skills : skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    if (linkedin !== undefined) employee.linkedin = linkedin;
+    if (dateOfBirth) employee.dateOfBirth = new Date(dateOfBirth);
+
+    await employee.save();
+
+    const populated = await Employee.findById(employee._id)
+      .populate('user', 'email role')
+      .populate('department', 'name code')
+      .populate('manager', 'firstName lastName employeeId jobTitle');
+
+    res.status(200).json({
+      success: true,
+      data: populated,
+      message: 'Your profile has been updated successfully'
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Get single employee profile by ID (Admin / HR Manager)
+// @route   GET /api/employees/:id
+// @access  Private (Admin, HR Manager)
+export const getEmployeeById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const employee = await Employee.findById(req.params.id)
+      .populate('user', 'email role')
+      .populate('department', 'name code')
+      .populate('manager', 'firstName lastName employeeId jobTitle');
+
+    if (!employee) {
+      return next(new ErrorResponse('Employee profile not found', 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: employee
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Update any employee profile details (Admin / HR Manager)
+// @route   PUT /api/employees/:id
+// @access  Private (Admin, HR Manager)
+export const updateEmployeeById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return next(new ErrorResponse('Employee profile not found', 404));
+    }
+
+    const {
+      firstName,
+      lastName,
+      phone,
+      address,
+      emergencyContact,
+      bio,
+      skills,
+      linkedin,
+      dateOfBirth,
+      jobTitle,
+      department,
+      manager,
+      status,
+      baseSalary
+    } = req.body;
+
+    if (firstName) employee.firstName = firstName;
+    if (lastName) employee.lastName = lastName;
+    if (phone !== undefined) employee.phone = phone;
+    if (address !== undefined) employee.address = address;
+    if (emergencyContact !== undefined) employee.emergencyContact = emergencyContact;
+    if (bio !== undefined) employee.bio = bio;
+    if (skills !== undefined) {
+      employee.skills = Array.isArray(skills) ? skills : skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    if (linkedin !== undefined) employee.linkedin = linkedin;
+    if (dateOfBirth) employee.dateOfBirth = new Date(dateOfBirth);
+    if (jobTitle) employee.jobTitle = jobTitle;
+    if (department) employee.department = department;
+    if (manager !== undefined) employee.manager = manager || undefined;
+    if (status) employee.status = status;
+    if (baseSalary !== undefined) employee.baseSalary = Number(baseSalary);
+
+    await employee.save();
+
+    const populated = await Employee.findById(employee._id)
+      .populate('user', 'email role')
+      .populate('department', 'name code')
+      .populate('manager', 'firstName lastName employeeId jobTitle');
+
+    res.status(200).json({
+      success: true,
+      data: populated,
+      message: 'Employee record updated successfully'
     });
   } catch (err) {
     next(err);
