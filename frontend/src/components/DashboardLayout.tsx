@@ -138,11 +138,11 @@ const DashboardLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-bg flex relative overflow-hidden custom-scrollbar">
+    < div className="min-h-screen bg-surface-bg flex relative overflow-hidden custom-scrollbar" >
       {/* Sidebar Navigation - Desktop View */}
-      <aside className="hidden md:flex md:w-64 flex-col bg-[#0c0e14] border-r border-[#1a1d27] shrink-0 z-20">
+      < aside className="hidden md:flex md:w-64 flex-col bg-[#0c0e14] border-r border-[#1a1d27] shrink-0 z-20" >
         {/* Brand Header */}
-        <div className="h-16 flex items-center gap-3 px-5 border-b border-[#1a1d27]">
+        < div className="h-16 flex items-center gap-3 px-5 border-b border-[#1a1d27]" >
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
             <Briefcase className="w-4 h-4 text-white" />
           </div>
@@ -150,45 +150,47 @@ const DashboardLayout: React.FC = () => {
             <span className="text-white font-semibold text-sm tracking-tight">Enterprise HRMS</span>
             <span className="text-[10px] text-zinc-500 font-medium">Workforce Suite v2.5</span>
           </div>
-        </div>
+        </div >
 
         {/* Categorized Navigation Item Links */}
-        <nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto custom-scrollbar">
-          {navGroups.map((group) => {
-            const visibleItems = group.items.filter(item => item.roles.includes(user?.role || ''));
-            if (visibleItems.length === 0) return null;
+        < nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto custom-scrollbar" >
+          {
+            navGroups.map((group) => {
+              const visibleItems = group.items.filter(item => item.roles.includes(user?.role || ''));
+              if (visibleItems.length === 0) return null;
 
-            return (
-              <div key={group.category} className="space-y-1">
-                <span className="block px-3 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                  {group.category}
-                </span>
-                <div className="space-y-0.5">
-                  {visibleItems.map((link) => {
-                    const Icon = link.icon;
-                    const active = isActive(link.path);
-                    return (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${active
+              return (
+                <div key={group.category} className="space-y-1">
+                  <span className="block px-3 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                    {group.category}
+                  </span>
+                  <div className="space-y-0.5">
+                    {visibleItems.map((link) => {
+                      const Icon = link.icon;
+                      const active = isActive(link.path);
+                      return (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${active
                             ? 'bg-indigo-600 text-white shadow-sm'
                             : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/4'
-                          }`}
-                      >
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-zinc-400'}`} />
-                        <span className="truncate">{link.name}</span>
-                      </Link>
-                    );
-                  })}
+                            }`}
+                        >
+                          <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-zinc-400'}`} />
+                          <span className="truncate">{link.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </nav>
+              );
+            })
+          }
+        </nav >
 
         {/* User Card & Signout Footer */}
-        <div className="p-3.5 border-t border-[#1a1d27] bg-[#0c0e14]">
+        < div className="p-3.5 border-t border-[#1a1d27] bg-[#0c0e14]" >
           <Link
             to="/profile"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-surface-card hover:bg-[#161824] border border-surface-border hover:border-indigo-500/30 transition group cursor-pointer"
@@ -213,76 +215,78 @@ const DashboardLayout: React.FC = () => {
             <LogOut className="w-3.5 h-3.5" />
             Sign Out
           </button>
-        </div>
-      </aside>
+        </div >
+      </aside >
 
       {/* Sidebar Navigation - Mobile Drawer View */}
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex animate-fade-in">
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+      {
+        mobileOpen && (
+          <div className="md:hidden fixed inset-0 z-50 flex animate-fade-in">
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
 
-          <aside className="relative flex w-68 max-w-xs flex-col bg-[#0c0e14] border-r border-[#1a1d27] p-4 z-50 shadow-2xl">
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute right-4 top-4 p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <aside className="relative flex w-68 max-w-xs flex-col bg-[#0c0e14] border-r border-[#1a1d27] p-4 z-50 shadow-2xl">
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="absolute right-4 top-4 p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
 
-            <div className="h-12 flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                <Briefcase className="w-4 h-4" />
+              <div className="h-12 flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                  <Briefcase className="w-4 h-4" />
+                </div>
+                <span className="text-white font-semibold text-sm">Enterprise HRMS</span>
               </div>
-              <span className="text-white font-semibold text-sm">Enterprise HRMS</span>
-            </div>
 
-            <nav className="flex-1 space-y-3.5 overflow-y-auto custom-scrollbar">
-              {navGroups.map((group) => {
-                const visibleItems = group.items.filter(item => item.roles.includes(user?.role || ''));
-                if (visibleItems.length === 0) return null;
+              <nav className="flex-1 space-y-3.5 overflow-y-auto custom-scrollbar">
+                {navGroups.map((group) => {
+                  const visibleItems = group.items.filter(item => item.roles.includes(user?.role || ''));
+                  if (visibleItems.length === 0) return null;
 
-                return (
-                  <div key={group.category} className="space-y-1">
-                    <span className="block px-3 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
-                      {group.category}
-                    </span>
-                    <div className="space-y-0.5">
-                      {visibleItems.map((link) => {
-                        const Icon = link.icon;
-                        const active = isActive(link.path);
-                        return (
-                          <Link
-                            key={link.path}
-                            to={link.path}
-                            onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition ${active
+                  return (
+                    <div key={group.category} className="space-y-1">
+                      <span className="block px-3 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                        {group.category}
+                      </span>
+                      <div className="space-y-0.5">
+                        {visibleItems.map((link) => {
+                          const Icon = link.icon;
+                          const active = isActive(link.path);
+                          return (
+                            <Link
+                              key={link.path}
+                              to={link.path}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition ${active
                                 ? 'bg-indigo-600 text-white'
                                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
-                              }`}
-                          >
-                            <Icon className="w-4 h-4" />
-                            {link.name}
-                          </Link>
-                        );
-                      })}
+                                }`}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {link.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </nav>
+                  );
+                })}
+              </nav>
 
-            <div className="pt-3 border-t border-[#1a1d27]">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-xs font-medium cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                Sign Out
-              </button>
-            </div>
-          </aside>
-        </div>
-      )}
+              <div className="pt-3 border-t border-[#1a1d27]">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-xs font-medium cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Sign Out
+                </button>
+              </div>
+            </aside>
+          </div>
+        )
+      }
 
       {/* Main View Container */}
       <div className="flex-1 flex flex-col min-w-0 relative z-10 overflow-x-hidden">
@@ -339,8 +343,8 @@ const DashboardLayout: React.FC = () => {
                         <div
                           key={n.id}
                           className={`p-2.5 rounded-lg border flex items-start gap-2.5 transition text-xs ${n.unread
-                              ? 'bg-[#161824] border-indigo-500/20'
-                              : 'bg-[#0e1017] border-surface-border'
+                            ? 'bg-[#161824] border-indigo-500/20'
+                            : 'bg-[#0e1017] border-surface-border'
                             }`}
                         >
                           <div className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400 shrink-0 mt-0.5">
@@ -382,7 +386,7 @@ const DashboardLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
-    </div>
+    </div >
   );
 };
 
