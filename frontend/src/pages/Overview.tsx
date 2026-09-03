@@ -918,7 +918,7 @@ const Overview: React.FC = () => {
                     value={bulletinTitle}
                     onChange={(e) => setBulletinTitle(e.target.value)}
                     placeholder="e.g. Q3 Company Review Meeting"
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -927,7 +927,7 @@ const Overview: React.FC = () => {
                   <select
                     value={bulletinPriority}
                     onChange={(e: any) => setBulletinPriority(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -943,7 +943,7 @@ const Overview: React.FC = () => {
                     value={bulletinContent}
                     onChange={(e) => setBulletinContent(e.target.value)}
                     placeholder="Enter details for the workforce..."
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                    className="w-full glass-input px-3 py-2 text-xs resize-none"
                   />
                 </div>
 
@@ -1241,7 +1241,7 @@ const Overview: React.FC = () => {
                 <select
                   value={leaveType}
                   onChange={(e: any) => setLeaveType(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 >
                   <option value="Vacation">Vacation Leave</option>
                   <option value="Sick">Sick / Medical Leave</option>
@@ -1259,7 +1259,7 @@ const Overview: React.FC = () => {
                     required
                     value={leaveStart}
                     onChange={(e) => setLeaveStart(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
                 <div>
@@ -1269,7 +1269,7 @@ const Overview: React.FC = () => {
                     required
                     value={leaveEnd}
                     onChange={(e) => setLeaveEnd(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
               </div>
@@ -1282,7 +1282,7 @@ const Overview: React.FC = () => {
                   value={leaveReason}
                   onChange={(e) => setLeaveReason(e.target.value)}
                   placeholder="Provide brief context for the time off..."
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full glass-input px-3 py-2 text-xs resize-none"
                 />
               </div>
 

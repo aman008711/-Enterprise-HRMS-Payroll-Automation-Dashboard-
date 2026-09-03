@@ -223,7 +223,7 @@ const Profile: React.FC = () => {
       )}
 
       {/* Header Profile Banner */}
-      <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="bg-surface-card border border-surface-border rounded-xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center font-bold text-xl select-none">
             {myProfile?.firstName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()}
@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
                   required
                   value={myFirstName}
                   onChange={(e) => setMyFirstName(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
 
@@ -308,7 +308,7 @@ const Profile: React.FC = () => {
                   required
                   value={myLastName}
                   onChange={(e) => setMyLastName(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
 
@@ -318,7 +318,7 @@ const Profile: React.FC = () => {
                   type="email"
                   disabled
                   value={myProfile?.user?.email || user?.email || ''}
-                  className="w-full bg-[#0a0c12] border border-surface-border rounded-lg px-3 py-2 text-xs text-zinc-500 cursor-not-allowed"
+                  className="w-full glass-input px-3 py-2 text-xs opacity-60 cursor-not-allowed"
                   title="Official corporate email cannot be modified directly"
                 />
               </div>
@@ -330,7 +330,7 @@ const Profile: React.FC = () => {
                   value={myPhone}
                   onChange={(e) => setMyPhone(e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
 
@@ -341,7 +341,7 @@ const Profile: React.FC = () => {
                   value={myAddress}
                   onChange={(e) => setMyAddress(e.target.value)}
                   placeholder="Street address, city, state, postal code"
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
 
@@ -351,7 +351,7 @@ const Profile: React.FC = () => {
                   type="date"
                   value={myDob}
                   onChange={(e) => setMyDob(e.target.value)}
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
 
@@ -362,7 +362,7 @@ const Profile: React.FC = () => {
                   value={myEmergencyContact}
                   onChange={(e) => setMyEmergencyContact(e.target.value)}
                   placeholder="Name (e.g. Jane Doe - +1 555 1234)"
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full glass-input px-3 py-2 text-xs"
                 />
               </div>
             </div>
@@ -375,7 +375,7 @@ const Profile: React.FC = () => {
                   value={myBio}
                   onChange={(e) => setMyBio(e.target.value)}
                   placeholder="Share a short bio summarizing your background and role..."
-                  className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full glass-input px-3 py-2 text-xs resize-none"
                 />
               </div>
 
@@ -387,7 +387,7 @@ const Profile: React.FC = () => {
                     value={mySkills}
                     onChange={(e) => setMySkills(e.target.value)}
                     placeholder="React, TypeScript, Payroll Compliance"
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -398,7 +398,7 @@ const Profile: React.FC = () => {
                     value={myLinkedin}
                     onChange={(e) => setMyLinkedin(e.target.value)}
                     placeholder="https://linkedin.com/in/username"
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
               </div>
@@ -512,7 +512,7 @@ const Profile: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, ID, or email..."
-                className="w-full bg-[#0e1017] border border-surface-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full glass-input pl-8 pr-3 py-1.5 text-xs"
               />
             </div>
 
@@ -594,7 +594,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminFirstName}
                     onChange={(e) => setAdminFirstName(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -605,7 +605,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminLastName}
                     onChange={(e) => setAdminLastName(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -616,7 +616,7 @@ const Profile: React.FC = () => {
                     required
                     value={adminJobTitle}
                     onChange={(e) => setAdminJobTitle(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -625,7 +625,7 @@ const Profile: React.FC = () => {
                   <select
                     value={adminDepartment}
                     onChange={(e) => setAdminDepartment(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   >
                     <option value="">Select Department</option>
                     {departmentsList.map((dept: any) => (
@@ -641,7 +641,7 @@ const Profile: React.FC = () => {
                   <select
                     value={adminStatus}
                     onChange={(e) => setAdminStatus(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   >
                     <option value="Active">Active</option>
                     <option value="On Leave">On Leave</option>
@@ -656,7 +656,7 @@ const Profile: React.FC = () => {
                     min="0"
                     value={adminBaseSalary}
                     onChange={(e) => setAdminBaseSalary(Number(e.target.value))}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -666,7 +666,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminPhone}
                     onChange={(e) => setAdminPhone(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -676,7 +676,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminEmergencyContact}
                     onChange={(e) => setAdminEmergencyContact(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -686,7 +686,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminAddress}
                     onChange={(e) => setAdminAddress(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -696,7 +696,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={adminSkills}
                     onChange={(e) => setAdminSkills(e.target.value)}
-                    className="w-full bg-[#0e1017] border border-surface-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full glass-input px-3 py-2 text-xs"
                   />
                 </div>
               </div>
