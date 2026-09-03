@@ -37,6 +37,17 @@ import {
   Download
 } from 'lucide-react';
 
+const SkeletonCard: React.FC = () => (
+  <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 animate-pulse space-y-3">
+    <div className="flex items-center justify-between">
+      <div className="h-3 w-24 bg-zinc-800 rounded" />
+      <div className="w-8 h-8 bg-zinc-800 rounded-lg" />
+    </div>
+    <div className="h-7 w-20 bg-zinc-800 rounded" />
+    <div className="h-2.5 w-32 bg-zinc-800/60 rounded" />
+  </div>
+);
+
 const Overview: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -361,19 +372,6 @@ const Overview: React.FC = () => {
     }
   ];
 
-  /* ==========================================================================
-     SKELETON LOADER COMPONENT
-     ========================================================================== */
-  const SkeletonCard = () => (
-    <div className="bg-[#11131a] border border-[#1e212d] rounded-xl p-5 animate-pulse space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="h-3 w-24 bg-zinc-800 rounded" />
-        <div className="w-8 h-8 bg-zinc-800 rounded-lg" />
-      </div>
-      <div className="h-7 w-20 bg-zinc-800 rounded" />
-      <div className="h-2.5 w-32 bg-zinc-800/60 rounded" />
-    </div>
-  );
 
   /* ==========================================================================
      1. HR / ADMIN DASHBOARD VIEW

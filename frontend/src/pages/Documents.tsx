@@ -797,7 +797,7 @@ const Documents: React.FC = () => {
                   disabled={verifyDocMutation.isPending}
                   className="flex items-center gap-1 px-4 py-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white font-bold rounded-lg text-xs transition duration-200 cursor-pointer disabled:opacity-50 select-none"
                 >
-                  <XIcon className="w-3.5 h-3.5" />
+                  <CloseIcon className="w-3.5 h-3.5" />
                   Reject Document
                 </button>
                 <button
@@ -817,24 +817,5 @@ const Documents: React.FC = () => {
     </div>
   );
 };
-
-const XIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="lucide lucide-x w-3.5 h-3.5"
-  >
-    <path d="M18 6 6 18" />
-    <path d="m6 6 12 12" />
-  </svg>
-);
 
 export default Documents;
