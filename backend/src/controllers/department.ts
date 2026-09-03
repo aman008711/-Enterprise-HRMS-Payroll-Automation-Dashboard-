@@ -82,6 +82,22 @@ export const getDepartmentHierarchy = async (req: Request, res: Response, next: 
   }
 };
 
+// @desc    Get list of all departments
+// @route   GET /api/departments
+// @access  Private (Any authenticated user)
+export const getDepartments = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const departments = await Department.find().sort('name').lean();
+    res.status(200).json({
+      success: true,
+      count: departments.length,
+      data: departments
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // @desc    Create a new department
 // @route   POST /api/departments
 // @access  Private (Admin)

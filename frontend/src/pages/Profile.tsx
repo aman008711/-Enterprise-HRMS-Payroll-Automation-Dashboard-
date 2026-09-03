@@ -62,31 +62,35 @@ const Profile: React.FC = () => {
   /* ==========================================================================
      QUERIES
      ========================================================================== */
-  const { data: myProfile } = useQuery({
+  const { data: myProfileRes } = useQuery({
     queryKey: ['my-profile'],
     queryFn: async () => {
       const res = await api.get('/employees/me');
-      return res.data?.data;
+      return res.data?.data || res.data;
     }
   });
 
-  const { data: employeesList } = useQuery({
+  const { data: employeesRes, isLoading: loadingEmployees } = useQuery({
     queryKey: ['all-employees-profile'],
     queryFn: async () => {
       const res = await api.get('/employees');
-      return res.data?.data || [];
+      return res.data?.data || res.data || [];
     },
     enabled: isAdminOrHR
   });
 
-  const { data: departments } = useQuery({
+  const { data: departmentsRes } = useQuery({
     queryKey: ['departments-profile'],
     queryFn: async () => {
       const res = await api.get('/departments');
-      return res.data?.data || [];
+      return res.data?.data || res.data || [];
     },
     enabled: isAdminOrHR
   });
+
+  const myProfile = myProfileRes;
+  const employeesList: any[] = Array.isArray(employeesRes) ? employeesRes : Array.isArray(employeesRes?.data) ? employeesRes.data : [];
+  const departmentsList: any[] = Array.isArray(departmentsRes) ? departmentsRes : Array.isArray(departmentsRes?.data) ? departmentsRes.data : [];
 
   // Populate My Profile form fields
   useEffect(() => {
@@ -104,7 +108,7 @@ const Profile: React.FC = () => {
   }, [myProfile]);
 
   // Selected employee for Admin/HR editing
-  const selectedEmployee = employeesList?.find((e: any) => e._id === selectedEmployeeId) || employeesList?.[0];
+  const selectedEmployee = employeesList.find((e: any) => e._id === selectedEmployeeId) || employeesList[0];
 
   useEffect(() => {
     if (selectedEmployee) {
@@ -514,56 +518,72 @@ const Profile: React.FC = () => {
 
             {/* Employee roster scroll list */}
             <div className="space-y-1.5 max-h-[500px] overflow-y-auto custom-scrollbar">
-              {filteredEmployees.map((emp: any) => {
-                const isSelected = (selectedEmployeeId || selectedEmployee?._id) === emp._id;
-                return (
-                  <div
-                    key={emp._id}
-                    onClick={() => setSelectedEmployeeId(emp._id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition ${
-                      isSelected
-                        ? 'bg-indigo-950/20 border-indigo-500/40'
-                        : 'bg-[#0e1017] border-[#1e212d] hover:border-zinc-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-white">
-                        {emp.firstName} {emp.lastName}
-                      </span>
-                      <span className="text-[10px] font-mono text-zinc-400">{emp.employeeId}</span>
+              {loadingEmployees ? (
+                <div className="py-8 text-center space-y-2 text-zinc-400">
+                  <Loader className="w-5 h-5 animate-spin mx-auto text-indigo-400" />
+                  <span className="text-xs">Loading employee directory...</span>
+                </div>
+              ) : filteredEmployees.length > 0 ? (
+                filteredEmployees.map((emp: any) => {
+                  const isSelected = (selectedEmployeeId || selectedEmployee?._id) === emp._id;
+                  return (
+                    <div
+                      key={emp._id}
+                      onClick={() => setSelectedEmployeeId(emp._id)}
+                      className={`p-3 rounded-lg border cursor-pointer transition ${
+                        isSelected
+                          ? 'bg-indigo-950/20 border-indigo-500/40'
+                          : 'bg-[#0e1017] border-[#1e212d] hover:border-zinc-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-white">
+                          {emp.firstName} {emp.lastName}
+                        </span>
+                        <span className="text-[10px] font-mono text-zinc-400">{emp.employeeId}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-1">
+                        <span>{emp.jobTitle}</span>
+                        <span className={`px-1.5 py-0.2 rounded text-[9px] font-medium border ${
+                          emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                          emp.status === 'On Leave' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                          'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                        }`}>
+                          {emp.status}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-1">
-                      <span>{emp.jobTitle}</span>
-                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-medium border ${
-                        emp.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                        emp.status === 'On Leave' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                        'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                      }`}>
-                        {emp.status}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <p className="text-xs text-zinc-500 text-center py-6">No matching employees found.</p>
+              )}
             </div>
           </div>
 
           {/* Employee Record Editor (Admin & HR) */}
-          <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
-              <div>
-                <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
-                  <User className="w-4 h-4 text-emerald-400" />
-                  Editing Record: {selectedEmployee?.firstName} {selectedEmployee?.lastName}
-                </h3>
-                <span className="text-xs text-zinc-400 font-mono">
-                  {selectedEmployee?.employeeId} • {selectedEmployee?.user?.email}
+          {!selectedEmployee ? (
+            <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-8 flex flex-col items-center justify-center text-center space-y-2.5">
+              <Users className="w-8 h-8 text-zinc-600" />
+              <span className="text-sm font-semibold text-white">No Employee Selected</span>
+              <p className="text-xs text-zinc-400">Select an employee from the directory list on the left to edit their record.</p>
+            </div>
+          ) : (
+            <div className="lg:col-span-2 bg-[#11131a] border border-[#1e212d] rounded-xl p-5 md:p-6 space-y-5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-[#1e212d] pb-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+                    <User className="w-4 h-4 text-emerald-400" />
+                    Editing Record: {selectedEmployee.firstName} {selectedEmployee.lastName}
+                  </h3>
+                  <span className="text-xs text-zinc-400 font-mono">
+                    {selectedEmployee.employeeId} • {selectedEmployee.user?.email || 'No Email Linked'}
+                  </span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-semibold">
+                  Admin Elevated Access
                 </span>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-semibold">
-                Admin Elevated Access
-              </span>
-            </div>
 
             <form onSubmit={handleSaveAdminEmployee} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -608,7 +628,7 @@ const Profile: React.FC = () => {
                     className="w-full bg-[#0e1017] border border-[#1e212d] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="">Select Department</option>
-                    {departments.map((dept: any) => (
+                    {departmentsList.map((dept: any) => (
                       <option key={dept._id} value={dept._id}>
                         {dept.name} ({dept.code})
                       </option>
@@ -697,6 +717,7 @@ const Profile: React.FC = () => {
               </div>
             </form>
           </div>
+          )}
         </div>
       )}
     </div>

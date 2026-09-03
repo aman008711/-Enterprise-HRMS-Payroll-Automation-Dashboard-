@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDepartmentHierarchy, createDepartment } from '../controllers/department';
+import { getDepartmentHierarchy, createDepartment, getDepartments } from '../controllers/department';
 import { protect, authorizeRoles } from '../middleware/auth';
 import { validateRequest } from '../middleware/validate';
 import { createDepartmentSchema } from '../middleware/schemas';
@@ -8,6 +8,9 @@ const router = Router();
 
 // Apply auth protection middleware globally to all department routes
 router.use(protect);
+
+// GET all departments
+router.get('/', getDepartments);
 
 // GET department hierarchy structure (HR Manager / Admin access only)
 router.get('/hierarchy', authorizeRoles('Admin', 'HR Manager'), getDepartmentHierarchy);
