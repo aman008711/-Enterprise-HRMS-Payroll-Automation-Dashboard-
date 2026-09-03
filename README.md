@@ -450,9 +450,41 @@ npm run build
 # Runs `tsc -b && vite build` -> outputs optimized SPA to frontend/dist/
 ```
 
-### 2. Process Management (PM2)
+### 2. Multi-Stage Docker Container Deployment
 
-For production Linux environments, utilize PM2 to guarantee zero-downtime execution:
+The application features an enterprise multi-stage [`Dockerfile`](file:///c:/Users/amnk3/-Enterprise-HRMS-Payroll-Automation-Dashboard-/Dockerfile) that compiles both the Vite frontend SPA and Express TypeScript backend into a lightweight, hardened `node:20-alpine` runner container:
+
+```bash
+# Build the unified production container
+docker build -t enterprise-hrms:latest .
+
+# Run container with external MongoDB
+docker run -d \
+  -p 5000:5000 \
+  -e MONGO_URI="mongodb://your-mongo-host:27017/hrms" \
+  -e JWT_SECRET="your_production_secret_key_32chars_min" \
+  -e ENCRYPTION_KEY="your_production_aes256_encryption_key_min_32_chars" \
+  --name enterprise-hrms-app \
+  enterprise-hrms:latest
+```
+
+#### Turnkey Stack with Docker Compose
+To launch both the application and a dedicated MongoDB instance with persistent volume storage and automated health checks:
+
+```bash
+# Start all services in the background
+docker compose up -d
+
+# View real-time container logs
+docker compose logs -f
+
+# Stop services gracefully
+docker compose down
+```
+
+### 3. Process Management (PM2)
+
+For production Linux environments running bare-metal or VMs, utilize PM2:
 
 ```bash
 # In /backend

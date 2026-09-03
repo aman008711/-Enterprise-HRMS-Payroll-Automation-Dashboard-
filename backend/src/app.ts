@@ -1,4 +1,6 @@
 import express, { Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -24,8 +26,22 @@ import grievanceRoutes from './routes/grievance';
 
 const app = express();
 
-// 1. Security Headers via Helmet
-app.use(helmet());
+// 1. Security Headers via Helmet (configured for enterprise SPA asset delivery)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'"]
+      }
+    },
+    crossOriginEmbedderPolicy: false
+  })
+);
 
 // 2. Payload Response Compression
 app.use(compression());
@@ -56,7 +72,8 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// 5. Global Rate Limiter (Brute-force protection)
+// 5. Trust Proxy & Global Rate Limiter (Container & Reverse Proxy support)
+app.set('trust proxy', 1);
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
@@ -99,6 +116,18 @@ app.get('/health', (req: Request, res: Response) => {
     message: 'HRMS & Payroll Automation API is running'
   });
 });
+
+// 6. Serve static frontend assets in production container if public directory exists
+const publicDir = path.join(__dirname, '../public');
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get('*', (req: Request, res: Response, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(publicDir, 'index.html'));
+  });
+}
 
 // Global Error Handler Middleware
 app.use(errorHandler);

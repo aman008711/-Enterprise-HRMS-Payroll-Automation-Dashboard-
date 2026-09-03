@@ -1,0 +1,83 @@
+# ==============================================================================
+# Enterprise HRMS & Payroll Automation - Local Docker Compose Orchestrator
+# ==============================================================================
+
+name: enterprise-hrms
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. MERN Application Service (Unified Express API + Built Vite React 19 SPA)
+  # ----------------------------------------------------------------------------
+  hrms-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enterprise-hrms-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongodb:27017/hrms
+      - JWT_SECRET=production_enterprise_jwt_secret_key_32chars_min
+      - JWT_EXPIRES_IN=1d
+      - CLIENT_ORIGIN=http://localhost:5000
+      - ENCRYPTION_KEY=production_aes256_encryption_key_min_32_chars
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hrms-network
+
+  # ----------------------------------------------------------------------------
+  # 2. Database Persistence Service (MongoDB 7.0)
+  # ----------------------------------------------------------------------------
+  mongodb:
+    image: mongo:7.0-jammy
+    container_name: enterprise-hrms-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - hrms-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ----------------------------------------------------------------------------
+  # 3. Database Seeder Utility (On-demand execution for initial corporate data)
+  # ----------------------------------------------------------------------------
+  db-seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enterprise-hrms-seeder
+    profiles:
+      - tools
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/hrms
+      - JWT_SECRET=production_enterprise_jwt_secret_key_32chars_min
+      - ENCRYPTION_KEY=production_aes256_encryption_key_min_32_chars
+    entrypoint: ["node", "dist/seeder.js"]
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hrms-network
+
+# ------------------------------------------------------------------------------
+# Networks & Storage Volumes
+# ------------------------------------------------------------------------------
+networks:
+  hrms-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
