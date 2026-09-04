@@ -427,11 +427,11 @@ const DashboardLayout: React.FC = () => {
               title="Manage Profile"
             >
               <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors">{user?.email}</span>
-                <span className="text-[10px] text-zinc-400">{user?.role}</span>
+                <span className="text-xs font-semibold text-white group-hover:text-indigo-400 transition-colors">{user?.email}</span>
+                <span className="text-[10px] text-zinc-400 font-medium">{user?.role}</span>
               </div>
 
-              <div className="w-8 h-8 rounded-lg bg-[#181a24] group-hover:bg-[#202330] border border-[#272a38] group-hover:border-indigo-500/40 flex items-center justify-center text-white font-semibold text-xs select-none transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm select-none">
                 {user?.email[0]?.toUpperCase()}
               </div>
             </Link>

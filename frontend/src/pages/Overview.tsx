@@ -414,11 +414,11 @@ const Overview: React.FC = () => {
 
           <div className="flex items-center gap-2.5 flex-wrap">
             {/* Timeframe Filter Pills */}
-            <div className="flex items-center bg-[#181a24] p-1 rounded-lg border border-[#272a38] text-xs">
+            <div className="flex items-center bg-surface-bg p-1 rounded-lg border border-surface-border text-xs">
               <button
                 onClick={() => setTimeRange('month')}
                 className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
-                  timeRange === 'month' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                  timeRange === 'month' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Month
@@ -426,7 +426,7 @@ const Overview: React.FC = () => {
               <button
                 onClick={() => setTimeRange('quarter')}
                 className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
-                  timeRange === 'quarter' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                  timeRange === 'quarter' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Q3
@@ -434,7 +434,7 @@ const Overview: React.FC = () => {
               <button
                 onClick={() => setTimeRange('year')}
                 className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
-                  timeRange === 'year' ? 'bg-[#272a38] text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                  timeRange === 'year' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 FY26
@@ -443,9 +443,9 @@ const Overview: React.FC = () => {
 
             <button
               onClick={() => setShowBulletinModal(true)}
-              className="flex items-center gap-2 px-3.5 py-2 bg-[#181a24] hover:bg-[#202330] text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-2 bg-surface-card hover:bg-surface-card-hover text-white font-medium rounded-lg text-xs border border-surface-border transition cursor-pointer shadow-sm"
             >
-              <Megaphone className="w-3.5 h-3.5 text-zinc-400" />
+              <Megaphone className="w-3.5 h-3.5 text-indigo-400" />
               Post Notice
             </button>
           </div>
@@ -459,7 +459,7 @@ const Overview: React.FC = () => {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               to="/onboard"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181a24] hover:bg-[#202330] hover:border-zinc-700 text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card hover:bg-surface-card-hover text-white font-medium rounded-lg text-xs border border-surface-border shadow-sm transition cursor-pointer"
               title="Add a new employee to company roster"
             >
               <UserPlus className="w-3.5 h-3.5 text-indigo-400" />
@@ -467,20 +467,20 @@ const Overview: React.FC = () => {
             </Link>
             <Link
               to="/leaves"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181a24] hover:bg-[#202330] hover:border-zinc-700 text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card hover:bg-surface-card-hover text-white font-medium rounded-lg text-xs border border-surface-border shadow-sm transition cursor-pointer"
               title="Review pending leaves and claims"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               Approve Requests
               {pendingLeaves.length > 0 && (
-                <span className="px-1.5 py-0.2 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">
+                <span className="px-1.5 py-0.2 bg-amber-500/20 text-amber-400 rounded text-[10px] font-bold">
                   {pendingLeaves.length}
                 </span>
               )}
             </Link>
             <Link
               to="/payroll"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181a24] hover:bg-[#202330] hover:border-zinc-700 text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card hover:bg-surface-card-hover text-white font-medium rounded-lg text-xs border border-surface-border shadow-sm transition cursor-pointer"
               title="Execute and finalize monthly payroll ledger"
             >
               <CreditCard className="w-3.5 h-3.5 text-purple-400" />
@@ -489,7 +489,7 @@ const Overview: React.FC = () => {
             <button
               onClick={handleDownloadMasterReport}
               disabled={isGeneratingReport}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181a24] hover:bg-[#202330] hover:border-zinc-700 disabled:opacity-50 text-zinc-200 font-medium rounded-lg text-xs border border-[#272a38] transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card hover:bg-surface-card-hover disabled:opacity-50 text-white font-medium rounded-lg text-xs border border-surface-border shadow-sm transition cursor-pointer"
               title="Export complete financial PDF summary"
             >
               {isGeneratingReport ? <Loader className="w-3.5 h-3.5 animate-spin text-indigo-400" /> : <Download className="w-3.5 h-3.5 text-sky-400" />}
@@ -617,11 +617,11 @@ const Overview: React.FC = () => {
               </span>
             </div>
 
-            <div className="flex items-center bg-[#181a24] p-0.5 rounded-lg border border-[#272a38] text-xs">
+            <div className="flex items-center bg-surface-bg p-0.5 rounded-lg border border-surface-border text-xs">
               <button
                 onClick={() => setApprovalsTab('leaves')}
                 className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
-                  approvalsTab === 'leaves' ? 'bg-[#272a38] text-white' : 'text-zinc-400 hover:text-white'
+                  approvalsTab === 'leaves' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Leave Requests ({pendingLeaves.length})
@@ -629,7 +629,7 @@ const Overview: React.FC = () => {
               <button
                 onClick={() => setApprovalsTab('expenses')}
                 className={`px-3 py-1 rounded-md font-medium transition cursor-pointer ${
-                  approvalsTab === 'expenses' ? 'bg-[#272a38] text-white' : 'text-zinc-400 hover:text-white'
+                  approvalsTab === 'expenses' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Expense Claims ({pendingExpenses.length})

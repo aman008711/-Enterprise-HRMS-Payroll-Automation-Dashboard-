@@ -171,19 +171,72 @@ html.light {
   }
 }
 
-/* Light mode specific element fine-tuning */
-html.light .text-white {
+/* Light mode specific element fine-tuning and contrast harmonization */
+html.light body {
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
   color: #0f172a;
 }
 
-html.light button.bg-indigo-600 .text-white,
-html.light a.bg-indigo-600 .text-white,
-html.light .bg-indigo-600 .text-white,
-html.light .bg-indigo-500 .text-white,
-html.light [class*="bg-indigo-600"] span,
-html.light [class*="bg-indigo-600"] svg,
-html.light [class*="bg-rose-500"] .text-white,
-html.light [class*="bg-emerald-500"] .text-white {
+html.light .text-white:not([class*="bg-indigo-600"] *):not([class*="bg-indigo-500"] *):not([class*="bg-emerald-"] *):not([class*="bg-rose-"] *):not([class*="bg-amber-"] *):not(button.bg-indigo-600):not(a.bg-indigo-600):not([class*="bg-brand-"] *) {
+  color: #0f172a;
+}
+
+html.light button.bg-indigo-600,
+html.light a.bg-indigo-600,
+html.light .bg-indigo-600,
+html.light .bg-indigo-500,
+html.light .bg-brand-600,
+html.light .bg-brand-500 {
   color: #ffffff !important;
+}
+
+/* Light mode text contrast adjustments */
+html.light .text-zinc-200,
+html.light .text-zinc-300 {
+  color: #1e293b;
+}
+
+html.light .text-zinc-400 {
+  color: #475569;
+}
+
+html.light .text-zinc-500 {
+  color: #64748b;
+}
+
+/* Adapt hardcoded dark container hexes in light mode */
+html.light [class*="bg-[#181a24]"],
+html.light [class*="bg-[#141722]"],
+html.light [class*="bg-[#161824]"] {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+html.light [class*="bg-[#0e1017]"] {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+html.light [class*="bg-[#272a38]"] {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+html.light [class*="border-[#272a38]"] {
+  border-color: #cbd5e1;
+}
+
+html.light [class*="border-[#1a1d27]"] {
+  border-color: #e2e8f0;
 }
 

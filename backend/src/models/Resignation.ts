@@ -48,7 +48,6 @@ const ResignationSchema: Schema<IResignation> = new Schema(
 );
 
 // Performance indexes
-ResignationSchema.index({ employee: 1 });
 ResignationSchema.index({ status: 1 });
 
 const Resignation = mongoose.model<IResignation>('Resignation', ResignationSchema);
