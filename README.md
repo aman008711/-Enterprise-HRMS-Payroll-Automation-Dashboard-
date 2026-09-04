@@ -129,6 +129,13 @@ flowchart TD
 - **Confidential Grievance Redressal**: Whistleblower and workplace grievance submission system with restricted administrative review.
 - **Offboarding & Exit Workflow**: Structured employee resignation processing, clearance checklist tracking, and asset handover verification.
 
+### 9. Dynamic Visual Theme Engine (Dark / Light / System Mode)
+- **Zero-Flicker Persistence**: Global `ThemeProvider` with local storage persistence and automatic OS synchronization (`prefers-color-scheme`).
+- **High-Contrast Enterprise Palettes**:
+  - **Dark Mode (Default)**: Deep obsidian (`#090a0f`) and card surfaces (`#11131a`) with electric indigo accents.
+  - **Light Mode**: Crisp alabaster (`#f4f6fb`) and pure white cards (`#ffffff`) with structured slate borders (`#e2e8f0`).
+- **Seamless Quick Controls**: One-click dropdown switcher in the main navigation header and interactive visual preview cards in the System Settings panel.
+
 ---
 
 ## 🛠 Technology Stack

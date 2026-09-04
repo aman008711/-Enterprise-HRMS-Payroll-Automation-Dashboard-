@@ -10,8 +10,13 @@ import {
   Save, 
   Loader, 
   CheckCircle, 
-  AlertCircle 
+  AlertCircle,
+  Palette,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface SettingsData {
   smtpHost: string;
@@ -39,8 +44,11 @@ const Settings: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Theme state
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
   // Tab State
-  const [activeTab, setActiveTab] = useState<'smtp' | 'webhooks'>('smtp');
+  const [activeTab, setActiveTab] = useState<'appearance' | 'smtp' | 'webhooks'>('appearance');
 
   // 1. Fetch current settings configuration
   const { data, isLoading } = useQuery({
@@ -177,13 +185,27 @@ const Settings: React.FC = () => {
       )}
 
       {/* Navigation tabs */}
-      <div className="flex border-b border-white/10 select-none">
+      <div className="flex border-b border-surface-border select-none">
         <button
+          type="button"
+          onClick={() => setActiveTab('appearance')}
+          className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer flex items-center gap-2 ${
+            activeTab === 'appearance' 
+              ? 'border-brand-500 text-brand-400' 
+              : 'border-transparent text-zinc-400 hover:text-white'
+          }`}
+        >
+          <Palette className="w-4 h-4" />
+          Appearance & Theme
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('smtp')}
           className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer flex items-center gap-2 ${
             activeTab === 'smtp' 
-              ? 'border-brand-500 text-white' 
-              : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-brand-500 text-brand-400' 
+              : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <Mail className="w-4 h-4" />
@@ -191,11 +213,12 @@ const Settings: React.FC = () => {
         </button>
 
         <button
+          type="button"
           onClick={() => setActiveTab('webhooks')}
           className={`px-5 py-3 text-sm font-bold border-b-2 transition cursor-pointer flex items-center gap-2 ${
             activeTab === 'webhooks' 
-              ? 'border-brand-500 text-white' 
-              : 'border-transparent text-gray-400 hover:text-white'
+              ? 'border-brand-500 text-brand-400' 
+              : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <MessageSquare className="w-4 h-4" />
@@ -203,7 +226,132 @@ const Settings: React.FC = () => {
         </button>
       </div>
 
-      <form onSubmit={handleSave} className="glass-card rounded-2xl p-6 md:p-8 border border-white/5 shadow-xl space-y-6">
+      <div className="glass-card rounded-2xl p-6 md:p-8 border border-surface-border shadow-xl space-y-6">
+        {activeTab === 'appearance' ? (
+          /* SECTION 0: Appearance & Theme Settings */
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-bold text-white pb-1">Visual Theme & Display Preferences</h2>
+              <p className="text-xs text-zinc-400">
+                Choose how Enterprise HRMS looks on your device. Themes dynamically adjust backgrounds, high-contrast borders, and executive card styling.
+              </p>
+            </div>
+
+            {/* Theme Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* Dark Theme Card */}
+              <div
+                onClick={() => setTheme('dark')}
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                  theme === 'dark'
+                    ? 'border-brand-500 bg-brand-500/10 shadow-lg shadow-brand-500/10'
+                    : 'border-surface-border bg-surface-card hover:border-zinc-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-indigo-950/60 text-indigo-400 border border-indigo-800/40">
+                      <Moon className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-white">Dark Mode</span>
+                  </div>
+                  {theme === 'dark' && (
+                    <span className="px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Deep obsidian and slate enterprise palette designed for low-glare productivity and sleek high contrast.
+                </p>
+                <div className="mt-4 pt-3 border-t border-surface-border flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#090a0f] border border-zinc-700" />
+                  <span className="w-3 h-3 rounded-full bg-[#11131a] border border-zinc-700" />
+                  <span className="w-3 h-3 rounded-full bg-indigo-600" />
+                  <span className="text-[10px] text-zinc-500 ml-auto font-mono">#090a0f • #11131a</span>
+                </div>
+              </div>
+
+              {/* Light Theme Card */}
+              <div
+                onClick={() => setTheme('light')}
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                  theme === 'light'
+                    ? 'border-brand-500 bg-brand-500/10 shadow-lg shadow-brand-500/10'
+                    : 'border-surface-border bg-surface-card hover:border-zinc-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                      <Sun className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-white">Light Mode</span>
+                  </div>
+                  {theme === 'light' && (
+                    <span className="px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Clean alabaster backgrounds with crisp slate borders and high-readability executive typography.
+                </p>
+                <div className="mt-4 pt-3 border-t border-surface-border flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#f4f6fb] border border-zinc-300" />
+                  <span className="w-3 h-3 rounded-full bg-white border border-zinc-300" />
+                  <span className="w-3 h-3 rounded-full bg-indigo-600" />
+                  <span className="text-[10px] text-zinc-500 ml-auto font-mono">#f4f6fb • #ffffff</span>
+                </div>
+              </div>
+
+              {/* System Sync Card */}
+              <div
+                onClick={() => setTheme('system')}
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                  theme === 'system'
+                    ? 'border-brand-500 bg-brand-500/10 shadow-lg shadow-brand-500/10'
+                    : 'border-surface-border bg-surface-card hover:border-zinc-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-white">System Auto</span>
+                  </div>
+                  {theme === 'system' && (
+                    <span className="px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Automatically harmonizes with your operating system's light or dark mode preference in real-time.
+                </p>
+                <div className="mt-4 pt-3 border-t border-surface-border flex items-center justify-between">
+                  <span className="text-[10px] text-zinc-400 font-medium">Currently resolved to:</span>
+                  <span className="text-[10px] font-bold text-indigo-400 uppercase font-mono">{resolvedTheme}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Current Active Status Banner */}
+            <div className="p-4 rounded-xl bg-surface-card border border-surface-border flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-zinc-300 font-medium">
+                  Preference persisted: Theme changes apply instantly and save automatically to your local browser profile.
+                </span>
+              </div>
+              <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-surface-border font-mono text-[11px] text-indigo-400">
+                Mode: {theme.toUpperCase()} ({resolvedTheme})
+              </span>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSave} className="space-y-6">
         
         {activeTab === 'smtp' ? (
           /* SECTION 1: SMTP Settings */
@@ -371,8 +519,9 @@ const Settings: React.FC = () => {
             )}
           </button>
         </div>
-
       </form>
+    )}
+      </div>
     </div>
   );
 };
