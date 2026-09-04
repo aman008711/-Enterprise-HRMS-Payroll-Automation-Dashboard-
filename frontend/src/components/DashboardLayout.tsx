@@ -20,8 +20,12 @@ import {
   Bell,
   UserPlus,
   FileText,
-  User
+  User,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface NavItem {
   name: string;
@@ -37,20 +41,26 @@ interface NavGroup {
 
 const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const themeRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const handleLogout = () => {
     logout();
   };
 
-  // Close notifications dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotificationsOpen(false);
+      }
+      if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
+        setThemeDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -138,11 +148,11 @@ const DashboardLayout: React.FC = () => {
   ];
 
   return (
-    < div className="min-h-screen bg-surface-bg flex relative overflow-hidden custom-scrollbar" >
+    <div className="min-h-screen bg-surface-bg flex relative overflow-hidden custom-scrollbar">
       {/* Sidebar Navigation - Desktop View */}
-      < aside className="hidden md:flex md:w-64 flex-col bg-[#0c0e14] border-r border-[#1a1d27] shrink-0 z-20" >
+      <aside className="hidden md:flex md:w-64 flex-col bg-surface-panel border-r border-surface-border shrink-0 z-20">
         {/* Brand Header */}
-        < div className="h-16 flex items-center gap-3 px-5 border-b border-[#1a1d27]" >
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-surface-border">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
             <Briefcase className="w-4 h-4 text-white" />
           </div>
@@ -150,7 +160,7 @@ const DashboardLayout: React.FC = () => {
             <span className="text-white font-semibold text-sm tracking-tight">Enterprise HRMS</span>
             <span className="text-[10px] text-zinc-500 font-medium">Workforce Suite v2.5</span>
           </div>
-        </div >
+        </div>
 
         {/* Categorized Navigation Item Links */}
         < nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto custom-scrollbar" >
@@ -187,13 +197,13 @@ const DashboardLayout: React.FC = () => {
               );
             })
           }
-        </nav >
+        </nav>
 
         {/* User Card & Signout Footer */}
-        < div className="p-3.5 border-t border-[#1a1d27] bg-[#0c0e14]" >
+        <div className="p-3.5 border-t border-surface-border bg-surface-panel">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-surface-card hover:bg-[#161824] border border-surface-border hover:border-indigo-500/30 transition group cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-2.5 bg-surface-card hover:bg-surface-card-hover border border-surface-border hover:border-indigo-500/30 transition group cursor-pointer"
             title="View and edit your profile details"
           >
             <div className="w-8 h-8 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/40 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
@@ -215,19 +225,18 @@ const DashboardLayout: React.FC = () => {
             <LogOut className="w-3.5 h-3.5" />
             Sign Out
           </button>
-        </div >
-      </aside >
+        </div>
+      </aside>
 
       {/* Sidebar Navigation - Mobile Drawer View */}
-      {
-        mobileOpen && (
-          <div className="md:hidden fixed inset-0 z-50 flex animate-fade-in">
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex animate-fade-in">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
 
-            <aside className="relative flex w-68 max-w-xs flex-col bg-[#0c0e14] border-r border-[#1a1d27] p-4 z-50 shadow-2xl">
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="absolute right-4 top-4 p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 cursor-pointer"
+          <aside className="relative flex w-68 max-w-xs flex-col bg-surface-panel border-r border-surface-border p-4 z-50 shadow-2xl">
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute right-4 top-4 p-1.5 rounded-lg bg-white/5 border border-white/10 text-zinc-300 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -274,7 +283,7 @@ const DashboardLayout: React.FC = () => {
                 })}
               </nav>
 
-              <div className="pt-3 border-t border-[#1a1d27]">
+              <div className="pt-3 border-t border-surface-border">
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-xs font-medium cursor-pointer"
@@ -291,7 +300,7 @@ const DashboardLayout: React.FC = () => {
       {/* Main View Container */}
       <div className="flex-1 flex flex-col min-w-0 relative z-10 overflow-x-hidden">
         {/* Header Navigation Bar */}
-        <header className="h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-[#1a1d27] bg-[#0c0e14]/90 backdrop-blur sticky top-0 z-30">
+        <header className="h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-surface-border bg-header-bg backdrop-blur sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
@@ -313,6 +322,54 @@ const DashboardLayout: React.FC = () => {
             <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>System Operational • RBAC Active</span>
+            </div>
+
+            {/* Dynamic Theme Switcher */}
+            <div className="relative" ref={themeRef}>
+              <button
+                onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
+                className="p-2 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#272a38] text-zinc-300 hover:text-white transition cursor-pointer flex items-center gap-1.5 text-xs"
+                title={`Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)} (Click to switch)`}
+                aria-label="Toggle visual theme"
+              >
+                {resolvedTheme === 'dark' ? (
+                  <Moon className="w-4 h-4 text-indigo-400" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                )}
+              </button>
+
+              {themeDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-36 bg-surface-card border border-surface-border rounded-xl shadow-2xl p-1.5 z-50 space-y-0.5 animate-fade-in text-xs">
+                  <button
+                    onClick={() => { setTheme('dark'); setThemeDropdownOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-left transition cursor-pointer ${
+                      theme === 'dark' ? 'bg-indigo-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5" />
+                    <span>Dark</span>
+                  </button>
+                  <button
+                    onClick={() => { setTheme('light'); setThemeDropdownOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-left transition cursor-pointer ${
+                      theme === 'light' ? 'bg-indigo-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                    <span>Light</span>
+                  </button>
+                  <button
+                    onClick={() => { setTheme('system'); setThemeDropdownOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-left transition cursor-pointer ${
+                      theme === 'system' ? 'bg-indigo-600 text-white' : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                    <span>System</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Notification Center */}

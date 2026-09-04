@@ -2,6 +2,38 @@
 
 @import "tailwindcss";
 
+:root {
+  --color-surface-bg: #090a0f;
+  --color-surface-card: #11131a;
+  --color-surface-card-hover: #161822;
+  --color-surface-border: #1e212d;
+  --color-surface-border-subtle: #161822;
+  --color-surface-panel: #0c0e14;
+  --color-surface-input: #0e1017;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-header-bg: rgba(12, 14, 20, 0.9);
+  --color-sidebar-bg: #0c0e14;
+  --color-sidebar-border: #1a1d27;
+}
+
+html.light {
+  --color-surface-bg: #f4f6fb;
+  --color-surface-card: #ffffff;
+  --color-surface-card-hover: #f8fafc;
+  --color-surface-border: #e2e8f0;
+  --color-surface-border-subtle: #edf2f7;
+  --color-surface-panel: #ffffff;
+  --color-surface-input: #f8fafc;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-header-bg: rgba(255, 255, 255, 0.95);
+  --color-sidebar-bg: #ffffff;
+  --color-sidebar-border: #e2e8f0;
+}
+
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -19,66 +51,73 @@
   --color-brand-900: #312e81;
   --color-brand-950: #1e1b4b;
 
-  /* Neutral zinc/slate enterprise tones */
-  --color-surface-bg: #090a0f;
-  --color-surface-card: #11131a;
-  --color-surface-card-hover: #161822;
-  --color-surface-border: #1e212d;
-  --color-surface-border-subtle: #161822;
+  /* Dynamic Neutral tokens */
+  --color-surface-bg: var(--color-surface-bg);
+  --color-surface-card: var(--color-surface-card);
+  --color-surface-card-hover: var(--color-surface-card-hover);
+  --color-surface-border: var(--color-surface-border);
+  --color-surface-border-subtle: var(--color-surface-border-subtle);
+  --color-surface-panel: var(--color-surface-panel);
+  --color-surface-input: var(--color-surface-input);
+  --color-header-bg: var(--color-header-bg);
+  --color-sidebar-bg: var(--color-sidebar-bg);
+  --color-sidebar-border: var(--color-sidebar-border);
 }
 
 /* Base resets and typography */
 @layer base {
   html, body {
     font-family: var(--font-sans);
-    background-color: #090a0f;
-    color: #e4e4e7;
+    background-color: var(--color-surface-bg);
+    color: var(--color-text-secondary);
     scroll-behavior: smooth;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: var(--color-text-primary);
     font-weight: 600;
   }
 
   option {
-    background-color: #11131a;
-    color: #ffffff;
+    background-color: var(--color-surface-card);
+    color: var(--color-text-primary);
   }
 }
 
 /* Professional enterprise card styling (clean, high contrast, structured) */
 @utility glass-card {
-  background-color: #11131a;
-  border: 1px solid #1e212d;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-surface-border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 @utility glass-card-hover {
   transition: border-color 0.2s ease, background-color 0.2s ease;
   &:hover {
-    border-color: #2e3346;
-    background-color: #141721;
+    border-color: var(--color-surface-border);
+    background-color: var(--color-surface-card-hover);
   }
 }
 
 @utility glass-panel {
-  background-color: #0c0e14;
-  border-right: 1px solid #1a1d27;
+  background-color: var(--color-surface-panel);
+  border-right: 1px solid var(--color-surface-border);
 }
 
 @utility glass-input {
-  background-color: #0e1017;
-  border: 1px solid #1e212d;
+  background-color: var(--color-surface-input);
+  border: 1px solid var(--color-surface-border);
   border-radius: 0.5rem;
-  color: #ffffff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  color: var(--color-text-primary);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   
   &:focus {
     outline: none;
@@ -87,7 +126,7 @@
   }
   
   &::placeholder {
-    color: #71717a;
+    color: var(--color-text-muted);
   }
 }
 
@@ -100,11 +139,11 @@
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: #27272a;
+    background: var(--color-surface-border);
     border-radius: 3px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #3f3f46;
+    background: #4f46e5;
   }
 }
 
@@ -114,10 +153,10 @@
   padding-right: 0.875rem;
   padding-top: 0.55rem;
   padding-bottom: 0.55rem;
-  background-color: #0e1017;
-  border: 1px solid #1e212d;
+  background-color: var(--color-surface-input);
+  border: 1px solid var(--color-surface-border);
   border-radius: 0.5rem;
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-size: 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   
@@ -128,6 +167,23 @@
   }
   
   &::placeholder {
-    color: #71717a;
+    color: var(--color-text-muted);
   }
 }
+
+/* Light mode specific element fine-tuning */
+html.light .text-white {
+  color: #0f172a;
+}
+
+html.light button.bg-indigo-600 .text-white,
+html.light a.bg-indigo-600 .text-white,
+html.light .bg-indigo-600 .text-white,
+html.light .bg-indigo-500 .text-white,
+html.light [class*="bg-indigo-600"] span,
+html.light [class*="bg-indigo-600"] svg,
+html.light [class*="bg-rose-500"] .text-white,
+html.light [class*="bg-emerald-500"] .text-white {
+  color: #ffffff !important;
+}
+
