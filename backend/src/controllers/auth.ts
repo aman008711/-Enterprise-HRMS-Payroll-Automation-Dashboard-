@@ -15,11 +15,12 @@ const signToken = (id: string, role: string): string => {
 const sendTokenResponse = (user: any, statusCode: number, res: Response) => {
   const token = signToken(user._id.toString(), user.role);
 
+  const isProduction = process.env.NODE_ENV === 'production';
   const cookieOptions = {
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day expiration
     httpOnly: true, // Prevent client-side scripting (XSS) from reading the cookie
-    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-    sameSite: process.env.NODE_ENV === 'production' ? ('strict' as const) : ('lax' as const)
+    secure: isProduction, // Only send over HTTPS in production
+    sameSite: isProduction ? ('none' as const) : ('lax' as const)
   };
 
   res

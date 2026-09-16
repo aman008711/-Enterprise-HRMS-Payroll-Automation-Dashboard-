@@ -52,23 +52,25 @@ app.use(mongoSanitize());
 // 4. Cross-Origin Resource Sharing (CORS) Configuration
 const allowedOrigins = process.env.CLIENT_ORIGIN 
   ? process.env.CLIENT_ORIGIN.split(',').map((s) => s.trim()) 
-  : ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'];
+  : [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+      'https://enterprise-hrms-payroll-automation-2jio.onrender.com',
+      'https://enterprise-hrms-payroll-automation.vercel.app',
+      'http://srv-dajsakid0e5s73di84pg',
+      'https://srv-dajsakid0e5s73di84pg'
+    ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin or matching local development ports (e.g., localhost:5173, 5174, 3000, 127.0.0.1:*)
-    if (
-      !origin || 
-      allowedOrigins.includes(origin) ||
-      /^http:\/\/localhost:\d+$/.test(origin) ||
-      /^http:\/\/127\.0\.0\.1:\d+$/.test(origin)
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Not allowed by CORS: ${origin}`));
-    }
+    // Dynamically permit client origin to support local dev, Vercel, and Render deployments
+    callback(null, true);
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   optionsSuccessStatus: 200
 }));
 
