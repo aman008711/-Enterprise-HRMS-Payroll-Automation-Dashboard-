@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { autoSeedIfEmpty } from '../utils/autoSeed';
 
 const connectDB = async (): Promise<void> => {
   const connUri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/hrms';
@@ -6,6 +7,9 @@ const connectDB = async (): Promise<void> => {
   try {
     const conn = await mongoose.connect(connUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    
+    // Automatically seed initial data if the database is newly created and empty
+    await autoSeedIfEmpty();
   } catch (error) {
     console.error(`MongoDB connection error: ${error}`);
     process.exit(1);
