@@ -43,6 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const loggedUser = data.user;
       setUser(loggedUser);
       localStorage.setItem('user', JSON.stringify(loggedUser));
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       
       // Clear queries cache to fetch fresh data for the newly logged user
       queryClient.clear();
@@ -56,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     queryClient.clear();
   };
 
